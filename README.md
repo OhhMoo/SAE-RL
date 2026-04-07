@@ -1,8 +1,4 @@
-# SAE-RL: SAE to Study RL Training
-
-**Central question:** Do RL training dynamics produce interpretable, structured changes in a model's feature space, and can SAEs detect them?
-
-This project trains Qwen2.5-0.5B-Instruct on GSM8k math problems through two phases — supervised fine-tuning (SFT) followed by PPO — then uses SAELens to train Sparse Autoencoders on intermediate checkpoints. By comparing SAE features across the SFT → PPO training trajectory, we ask whether RL produces changes in internal representations that are structured enough to be interpreted.
+# Using Sparese Autoencoder to Study Reinforcement Learning
 
 ---
 
