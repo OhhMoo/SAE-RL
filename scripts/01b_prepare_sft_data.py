@@ -24,6 +24,11 @@ def main():
 
     dataset = datasets.load_dataset("openai/gsm8k", "main")
     instruction = 'Let\'s think step by step and output the final answer after "####".'
+    system_prompt = (
+        "You are a math problem solver. Think step by step. "
+        "You MUST end your response with '#### <number>' where <number> is "
+        "the final numerical answer (digits only, no units or markdown)."
+    )
 
     def process_fn(example, _idx):
         question_raw = example.pop("question")
@@ -31,6 +36,7 @@ def main():
         answer_raw = example.pop("answer")
         return {
             "messages": [
+                {"role": "system", "content": system_prompt},
                 {"role": "user", "content": question},
                 {"role": "assistant", "content": answer_raw},
             ],

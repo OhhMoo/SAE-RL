@@ -81,22 +81,19 @@ python scripts/04_collect_activations.py \
     --save_dir data/activations
 
 # ============================================================
-# Step 5: Train SAEs
+# Step 5: Train SAEs (SAELens BatchTopK)
 # ============================================================
-echo ">>> Step 5: Training SAEs..."
-python scripts/05_train_sae.py \
-    --activations_dir data/activations \
-    --save_dir checkpoints/saes \
-    --expansion_factor 8 \
-    --k 32 \
-    --epochs 10
+echo ">>> Step 5: Training SAEs via SAELens..."
+python scripts/05_train_sae_lens.py --checkpoint pretrained
+python scripts/05_train_sae_lens.py --checkpoint sft   --model_path checkpoints/sft_merged
+python scripts/05_train_sae_lens.py --checkpoint ppo   --model_path "$PPO_CKPT"
 
 # ============================================================
 # Step 6: Analyze features
 # ============================================================
 echo ">>> Step 6: Analyzing features..."
 python scripts/06_analyze_features.py \
-    --sae_dir checkpoints/saes \
+    --sae_dir checkpoints/saes_lens \
     --activations_dir data/activations \
     --output_dir results/feature_analysis
 

@@ -1,14 +1,14 @@
 #!/bin/bash
-# Step 3: PPO Training on top of the SFT checkpoint
+# Step 3 (v3): PPO Training on top of the SFT checkpoint
 #
-# Uses verl's PPO trainer with GSM8k rule-based reward (exact match on #### answer).
-# The actor is initialized from the SFT checkpoint; the critic from the base model.
+# Shorter run: 5 epochs instead of 15, for faster iteration / ablation.
 #
-# Usage:
-#   bash scripts/03_ppo_qwen.sh [extra_configs...]
+# Usage (from repo root SAE_RL/):
+#   ACTOR_MODEL_PATH=checkpoints/sft_v2_merged CRITIC_MODEL_PATH=checkpoints/sft_v2_merged NUM_GPUS=2 \
+#     bash scripts/03_ppo_qwen_v3.sh [extra_configs...]
 #
-# Important: Set ACTOR_MODEL_PATH below to your SFT checkpoint before running.
-# After SFT with LoRA, you need the merged model path. See 02b_merge_lora.py.
+# Important: Set ACTOR_MODEL_PATH (and usually CRITIC_MODEL_PATH) to your merged SFT checkpoint.
+# After SFT with LoRA, use the merged folder from 02b_merge_lora.py.
 
 set -x
 
@@ -18,9 +18,12 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 DATA_DIR="${PROJECT_DIR}/data/gsm8k"
 
 # Point this to your merged SFT model (or base model if skipping SFT)
-ACTOR_MODEL_PATH="${ACTOR_MODEL_PATH:-Qwen/Qwen2.5-0.5B-Instruct}"
+ACTOR_MODEL_PATH="${ACTOR_MODEL_PATH:-checkpoints/sft_v2_merged}"
 CRITIC_MODEL_PATH="${CRITIC_MODEL_PATH:-Qwen/Qwen2.5-0.5B-Instruct}"
 NUM_GPUS="${NUM_GPUS:-2}"
+# vLLM / CUDA (see README known issues)
+export VLLM_USE_V1="${VLLM_USE_V1:-0}"
+export PYTORCH_CUDA_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF:-expandable_segments:False}"
 # ----------------------------------
 
 python3 -m verl.trainer.main_ppo \
@@ -62,10 +65,10 @@ python3 -m verl.trainer.main_ppo \
     trainer.val_before_train=False \
     trainer.logger='["console","wandb"]' \
     trainer.project_name='sae_rl_gsm8k' \
-    trainer.experiment_name='ppo_qwen2.5_0.5b' \
+    trainer.experiment_name='ppo_qwen2.5_0.5b_v3' \
     trainer.n_gpus_per_node=$NUM_GPUS \
     trainer.nnodes=1 \
     trainer.save_freq=5 \
     trainer.test_freq=5 \
-    trainer.total_epochs=15 \
+    trainer.total_epochs=5 \
     "$@"

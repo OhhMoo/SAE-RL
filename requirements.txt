@@ -9,9 +9,9 @@ ray>=2.10
 omegaconf
 hydra-core
 
-# SAE interpretability
-sae-lens>=4.0.0
-transformer-lens>=2.0.0
+# SAE interpretability — installed from local repo:
+#   pip install -e C:\Users\OhhMoo\Desktop\git_repo\SAE_Tools\SAELens
+# (SAELens v6.39.0, includes transformer-lens as a dependency)
 
 # Experiment tracking & utilities
 wandb

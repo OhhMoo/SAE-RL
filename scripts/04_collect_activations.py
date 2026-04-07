@@ -21,27 +21,36 @@ from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
-def collect_activations(model, tokenizer, prompts, layers, max_length=512, batch_size=8):
-    """Run forward passes and collect residual stream activations at specified layers."""
+def collect_activations(model, tokenizer, prompts, layers, max_length=512, batch_size=8,
+                        max_tokens=None):
+    """Run forward passes and collect per-token residual stream activations.
+
+    Padding tokens are excluded via the attention mask. Collection stops once
+    max_tokens real tokens have been gathered (per layer).
+    """
     device = model.device
     hooks = []
-    activations = {layer: [] for layer in layers}
+    # Buffer holds the raw (batch, seq, d_model) tensor from the current forward pass
+    batch_buffer = {layer: None for layer in layers}
 
     def make_hook(layer_idx):
         def hook_fn(module, input, output):
-            # output is a tuple; first element is the hidden state
             hidden = output[0] if isinstance(output, tuple) else output
-            # Take the mean over the sequence dimension to get a per-example vector
-            activations[layer_idx].append(hidden.detach().mean(dim=1).cpu())
+            batch_buffer[layer_idx] = hidden.detach().cpu()
         return hook_fn
 
-    # Register hooks on the specified transformer layers
     for layer_idx in layers:
         hook = model.model.layers[layer_idx].register_forward_hook(make_hook(layer_idx))
         hooks.append(hook)
 
+    all_activations = {layer: [] for layer in layers}
+    total_tokens = 0
+
     try:
         for i in tqdm(range(0, len(prompts), batch_size), desc="Collecting activations"):
+            if max_tokens and total_tokens >= max_tokens:
+                break
+
             batch = prompts[i : i + batch_size]
             inputs = tokenizer(
                 batch,
@@ -53,14 +62,24 @@ def collect_activations(model, tokenizer, prompts, layers, max_length=512, batch
 
             with torch.no_grad():
                 model(**inputs)
+
+            # Strip padding: mask shape (batch, seq)
+            mask = inputs["attention_mask"].bool().cpu()
+            total_tokens += mask.sum().item()
+
+            for layer_idx in layers:
+                hidden = batch_buffer[layer_idx]  # (batch, seq, d_model)
+                # Select only real (non-padding) token vectors → (n_real, d_model)
+                all_activations[layer_idx].append(hidden[mask])
+
     finally:
         for hook in hooks:
             hook.remove()
 
-    # Concatenate all batches
     result = {}
     for layer_idx in layers:
-        result[layer_idx] = torch.cat(activations[layer_idx], dim=0)
+        result[layer_idx] = torch.cat(all_activations[layer_idx], dim=0)
+        print(f"  Layer {layer_idx}: {result[layer_idx].shape[0]:,} tokens collected")
 
     return result
 
@@ -77,6 +96,8 @@ def main():
     parser.add_argument("--batch_size", type=int, default=8)
     parser.add_argument("--max_samples", type=int, default=None,
                         help="Limit number of prompts (for quick testing)")
+    parser.add_argument("--max_tokens", type=int, default=500_000,
+                        help="Stop after this many real tokens per checkpoint (default 500k)")
     args = parser.parse_args()
 
     os.makedirs(args.save_dir, exist_ok=True)
@@ -97,7 +118,8 @@ def main():
 
     print(f"Collecting activations from {len(prompts)} prompts, layers {args.layers}")
     acts = collect_activations(
-        model, tokenizer, prompts, args.layers, args.max_length, args.batch_size
+        model, tokenizer, prompts, args.layers, args.max_length, args.batch_size,
+        max_tokens=args.max_tokens,
     )
 
     for layer_idx, tensor in acts.items():

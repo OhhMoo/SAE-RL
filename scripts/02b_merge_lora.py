@@ -1,14 +1,26 @@
 """
 Step 2b: Merge LoRA adapter weights back into the base model.
 
-After SFT with LoRA, verl saves adapter weights separately. This script
-merges them into a full HuggingFace model that can be used as the PPO
-actor initialization and for SAE activation collection.
+verl SFT with FSDP writes checkpoints under ``global_step_*`` with
+``model_world_size_*_rank_*.pt`` and ``lora_train_meta.json``, not a HuggingFace
+PEFT folder (no ``adapter_config.json``). Convert that checkpoint first, then
+merge if you need a single flat HF model:
 
-Usage:
-    python scripts/02b_merge_lora.py \
-        --base_model Qwen/Qwen2.5-0.5B-Instruct \
-        --lora_path checkpoints/sft/sae_rl_gsm8k/sft_qwen2.5_0.5b/global_step_XXX/actor \
+    python -m verl.model_merger merge --backend fsdp \\
+        --local_dir checkpoints/sft/global_step_87 \\
+        --target_dir checkpoints/sft_hf
+
+That writes base weights under ``checkpoints/sft_hf`` and LoRA under
+``checkpoints/sft_hf/lora_adapter``. Then either point PPO at base+adapter, or
+run this script with ``--lora_path`` set to ``.../lora_adapter`` and
+``--base_model`` set to ``checkpoints/sft_hf`` (local path).
+
+If you already have a standard PEFT export (``adapter_config.json`` next to
+weights), use:
+
+    python scripts/02b_merge_lora.py \\
+        --base_model Qwen/Qwen2.5-0.5B-Instruct \\
+        --lora_path path/to/adapter_dir \\
         --output_path checkpoints/sft_merged
 """
 

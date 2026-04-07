@@ -52,8 +52,8 @@ torchrun --standalone --nnodes=1 --nproc_per_node=$nproc_per_node \
     trainer.project_name=sae_rl_gsm8k \
     trainer.experiment_name=sft_qwen2.5_0.5b \
     trainer.logger='["console","wandb"]' \
-    trainer.total_epochs=3 \
+    trainer.total_epochs=5 \
     model.lora_rank=32 \
-    model.lora_alpha=16 \
+    model.lora_alpha=32 \
     model.target_modules=all-linear \
     "$@"

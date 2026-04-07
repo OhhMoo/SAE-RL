@@ -22,6 +22,13 @@ def extract_solution(solution_str):
     return final_solution
 
 
+SYSTEM_PROMPT = (
+    "You are a math problem solver. Think step by step. "
+    "You MUST end your response with '#### <number>' where <number> is "
+    "the final numerical answer (digits only, no units or markdown)."
+)
+
+
 def make_map_fn(split):
     instruction = 'Let\'s think step by step and output the final answer after "####".'
 
@@ -33,7 +40,10 @@ def make_map_fn(split):
 
         return {
             "data_source": "openai/gsm8k",
-            "prompt": [{"role": "user", "content": question}],
+            "prompt": [
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": question},
+            ],
             "ability": "math",
             "reward_model": {"style": "rule", "ground_truth": solution},
             "extra_info": {
