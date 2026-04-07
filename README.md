@@ -12,19 +12,12 @@ The goal: move from "RL improved solve rate" to "here is *what changed internall
 
 The project proceeds in six stages. Stages 0–2 are complete or in progress; Stages 3–5 begin once PPO training finishes.
 
-### Stage 0 — Environment Setup ✅
+### Stage 1 — Environment Setup 
 
 Validated that `verl`, `SAELens`, and Qwen2.5-0.5B work together end-to-end. Confirmed VRAM budget for PPO with actor + critic + vLLM rollout on 2 GPUs.
 
-### Stage 1 — SFT Warm-Up ✅
 
-We first trained the model with supervised fine-tuning to establish baseline chain-of-thought math reasoning. Starting PPO from a model that already reasons in the right format means RL learns to *refine* existing behavior rather than learning it from scratch — making RL-induced representational changes smaller and more targeted, which is exactly what we want SAEs to pick up.
-
-**Training config:** 3 epochs, lr=1e-4, LoRA rank 32, FSDP on 2 GPUs. After training, we merged LoRA into flat HF weights.
-
-**Result:** SFT checkpoint at `checkpoints/sft_merged/`. This serves as both the RL starting point and the SAE baseline.
-
-### Stage 2 — PPO Training 🔄
+### Stage 2 — PPO Training 
 
 We run PPO on the SFT checkpoint with dense checkpointing — snapshots at early, mid, and late training — because the evolution of features over time is the primary data source for this project. A single final checkpoint would tell us *what* changed but not *when* or *how gradually*.
 
@@ -38,12 +31,7 @@ The reward is rule-based: parse the model's response for a `####` answer token a
 
 **Monitoring:** solve rate, KL divergence from SFT (behavioral drift), response length (reward hacking signal).
 
-**Issues encountered:**
-- OOM during vLLM KV cache wake-up after actor updates — resolved with `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:False` and `VLLM_USE_V1=0`
-- vLLM v1 memory profiling race on init — resolved with `VLLM_USE_V1=0`
-- `data.truncation=error` crashes on sequences > 512 tokens — switched to `'right'` truncation
-
-### Stage 3 — Collect Activations (Next)
+### Stage 3 — Collect Activations
 
 We will cache residual-stream activations from each checkpoint on a *fixed* set of GSM8k prompts. Using identical prompts across checkpoints is critical — otherwise we can't distinguish "this feature changed" from "the prompt changed."
 
@@ -69,7 +57,7 @@ This is the core science. We will run three analyses:
 
 For the most-changed features, we will collect top-activating examples and inspect whether they correspond to interpretable concepts (e.g., "arithmetic carry operation," "final answer token," "uncertainty"). Auto-interpretation via Claude API is also supported.
 
-### Stage 6 — SAE Regularization (Stretch Goal)
+### Stage 6 — SAE Regularization 
 
 We plan to test whether adding SAE sparsity as an auxiliary loss *during* PPO produces more interpretable representations. The idea: a frozen SAE (trained on SFT activations) measures the L1 sparsity of the model's activations, and this becomes a regularization term in the PPO loss.
 
