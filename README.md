@@ -1,9 +1,4 @@
-# Studying Reinforcement Learning with Sparse Autoencoders
-
-Using Sparse Autoencoders (SAEs) to reverse-engineer what RL training actually changes inside a language model. The testbed is Qwen2.5-0.5B fine-tuned on GSM8k math reasoning, with SAEs trained on residual-stream activations at multiple checkpoints along the RL trajectory.
-
-## Why This Matters
-
+# Studying RL with SAEs
 RL fine-tuning demonstrably changes model behavior, but *how* it changes internal representations is poorly understood. We designed a controlled experiment — fixed dataset (GSM8k), fixed model (Qwen2.5-0.5B), fixed SAE architecture (BatchTopK) — so that any differences in learned features across checkpoints reflect genuine representational change, not artifacts of the setup.
 
 The goal: move from "RL improved solve rate" to "here is *what changed internally* that caused that improvement."
@@ -43,8 +38,6 @@ We will train a BatchTopK SAE on each (checkpoint, layer) pair with *identical h
 
 Two implementations are available: one using SAELens (recommended), one hand-rolled with no external SAE dependency.
 
-> **Note:** `SAELENS_PATH` is currently hardcoded to a Windows path in `05_train_sae_lens.py` and `06_analyze_features.py`. Update this if SAELens is not pip-installed.
-
 ### Stage 5 — Feature Analysis
 
 This is the core science. We will run three analyses:
@@ -74,50 +67,7 @@ Experimental design: sweep λ ∈ {0, 1e-4, 1e-3}, compare final solve rate, SAE
 | Feature cosine similarity | Feature stability/change across checkpoints |
 | Top-activating examples | Interpretability of changed features |
 
-## Risks and Mitigations
 
-| Risk | Mitigation |
-|------|------------|
-| Model doesn't improve with PPO | Fall back to Qwen2.5-1.5B-Instruct |
-| SAEs across checkpoints aren't comparable | All SAE hyperparameters fixed; identical prompt set |
-| Features don't change meaningfully | Focus on later layers; extend PPO training |
-| VRAM insufficient | Gradient checkpointing; reduce batch size |
-| Reward hacking / length exploitation | Add length penalty; monitor output length |
-
-## Model
-
-**Qwen/Qwen2.5-0.5B-Instruct** — d_model=896, 24 transformer layers. SAEs target layers 6, 12, 18, 23.
-
-## Repository Structure
-
-```
-SAE_RL/
-  data/
-    gsm8k/            # PPO parquets (prompt + reward_model)
-    gsm8k_sft/        # SFT parquets (messages)
-    activations/      # Cached residual-stream tensors — {checkpoint}_layer{N}.pt
-  checkpoints/
-    sft/              # verl FSDP SFT checkpoint shards
-    sft_merged/       # Merged HF weights (PPO actor init + SAE baseline)
-    sae_rl_gsm8k/     # PPO checkpoints (global_step_*)
-    saes_lens/        # SAELens SAEs — {checkpoint}_layer{N}/
-    saes/             # Hand-rolled SAEs (alternative)
-  results/
-    feature_analysis/ # Plots + lifecycle tables from Stage 5
-  scripts/
-    01_prepare_data.py        # GSM8k → PPO parquet
-    01b_prepare_sft_data.py   # GSM8k → SFT parquet
-    02_sft_qwen.sh            # SFT training
-    02b_merge_lora.py         # LoRA merge
-    03_ppo_qwen.sh            # PPO training
-    04_collect_activations.py # Activation caching
-    05_train_sae_lens.py      # SAELens SAE training
-    05_train_sae.py           # Hand-rolled SAE training
-    06_analyze_features.py    # Feature comparison analysis
-    run_all.sh                # Full pipeline reference
-  research_plan.md
-  requirements.txt
-```
 
 ## References
 
