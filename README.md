@@ -1,7 +1,5 @@
 # Studying RL with SAEs
-RL fine-tuning demonstrably changes model behavior, but how it changes internal representations is poorly understood. We designed a controlled experiment — fixed dataset (GSM8k), fixed model (Qwen2.5-0.5B), fixed SAE architecture (BatchTopK) — so that any differences in learned features across checkpoints reflect genuine representational change, not artifacts of the setup.
-
-
+RL fine-tuning demonstrably changes model behavior, but how it changes internal representations is poorly understood. We designed a controlled experiment
 ## References
 
 - [verl documentation](https://verl.readthedocs.io)
