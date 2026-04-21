@@ -33,11 +33,12 @@ class TopKSAE(nn.Module):
         self.k = k
         self.d_model = d_model
         self.d_sae = d_sae
+        self.b_pre = nn.Parameter(torch.zeros(d_model))
         self.encoder = nn.Linear(d_model, d_sae, bias=True)
         self.decoder = nn.Linear(d_sae, d_model, bias=True)
 
     def encode(self, x):
-        z = self.encoder(x)
+        z = self.encoder(x - self.b_pre)
         topk_values, topk_indices = torch.topk(z, self.k, dim=-1)
         z_sparse = torch.zeros_like(z)
         z_sparse.scatter_(-1, topk_indices, topk_values)
@@ -53,7 +54,7 @@ def load_sae_from_disk(sae_path: str, device: str = "cpu"):
     ckpt = torch.load(sae_path, map_location=device, weights_only=False)
     cfg = ckpt["config"]
     sae = TopKSAE(cfg["d_model"], cfg["d_sae"], cfg["k"])
-    sae.load_state_dict(ckpt["state_dict"])
+    sae.load_state_dict(ckpt["state_dict"], strict=False)
     sae = sae.to(device)
     return sae, cfg
 

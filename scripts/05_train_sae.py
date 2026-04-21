@@ -23,7 +23,7 @@ from tqdm import tqdm
 
 
 class TopKSAE(nn.Module):
-    """Sparse Autoencoder with TopK activation function."""
+    """TopK Sparse Autoencoder with pre-encoder centering."""
 
     def __init__(self, d_model, d_sae, k):
         super().__init__()
@@ -31,27 +31,26 @@ class TopKSAE(nn.Module):
         self.d_model = d_model
         self.d_sae = d_sae
 
+        self.b_pre = nn.Parameter(torch.zeros(d_model))  # pre-encoder centering
         self.encoder = nn.Linear(d_model, d_sae, bias=True)
         self.decoder = nn.Linear(d_sae, d_model, bias=True)
 
-        # Initialize decoder columns to unit norm
         with torch.no_grad():
             self.decoder.weight.data = nn.functional.normalize(
                 self.decoder.weight.data, dim=0
             )
 
     def encode(self, x):
-        z = self.encoder(x)
-        # TopK: zero out all but top-k activations
+        z = self.encoder(x - self.b_pre)
         topk_values, topk_indices = torch.topk(z, self.k, dim=-1)
         z_sparse = torch.zeros_like(z)
         z_sparse.scatter_(-1, topk_indices, topk_values)
-        return z_sparse
+        return z_sparse, z  # z_sparse for reconstruction, z (pre-topk) for aux loss
 
     def forward(self, x):
-        z_sparse = self.encode(x)
+        z_sparse, z_pre = self.encode(x)
         x_hat = self.decoder(z_sparse)
-        return x_hat, z_sparse
+        return x_hat, z_sparse, z_pre
 
 
 def resample_dead_features(sae, activations, dead_mask, device, batch_size=512):
@@ -59,14 +58,13 @@ def resample_dead_features(sae, activations, dead_mask, device, batch_size=512):
 
     For each dead feature we pick a random token from the top-loss quartile,
     set its encoder row to that token's normalised residual direction, and reset
-    its decoder column and biases.  This mirrors the resampling strategy used in
-    Anthropic's SAE work.
+    its decoder column and encoder bias. The shared decoder bias is NOT reset —
+    it encodes the learned mean of the residual stream and must be preserved.
     """
     n_dead = dead_mask.sum().item()
     if n_dead == 0:
         return
 
-    # Compute per-token reconstruction loss on a random subset (up to 8k samples)
     n_sample = min(len(activations), 8192)
     idx = torch.randperm(len(activations))[:n_sample]
     sample = activations[idx].to(device).float()
@@ -75,11 +73,10 @@ def resample_dead_features(sae, activations, dead_mask, device, batch_size=512):
         losses = []
         for i in range(0, len(sample), batch_size):
             b = sample[i : i + batch_size]
-            x_hat, _ = sae(b)
+            x_hat, _, _ = sae(b)
             losses.append((b - x_hat).pow(2).mean(dim=-1))
         loss_per_token = torch.cat(losses)
 
-        # Use the top-25% highest-loss tokens as candidates
         threshold = loss_per_token.quantile(0.75)
         candidates = sample[loss_per_token >= threshold]
         if len(candidates) == 0:
@@ -87,61 +84,102 @@ def resample_dead_features(sae, activations, dead_mask, device, batch_size=512):
 
         dead_indices = dead_mask.nonzero(as_tuple=True)[0]
         chosen = candidates[torch.randint(len(candidates), (n_dead,))]
-        # Normalise to unit norm → encoder direction
         chosen_normed = nn.functional.normalize(chosen, dim=-1)
 
         sae.encoder.weight.data[dead_indices] = chosen_normed
         sae.encoder.bias.data[dead_indices] = 0.0
         sae.decoder.weight.data[:, dead_indices] = chosen_normed.T
-        sae.decoder.bias.data[:] = 0.0  # reset output bias too
+        # NOTE: decoder.bias is a shared d_model vector (learned mean of residual
+        # stream). Resetting it destroys centering and causes catastrophic loss
+        # spikes — do NOT touch it here.
 
     print(f"    Resampled {n_dead} dead features")
 
 
 def train_sae(activations, d_sae, k, epochs=50, lr=3e-4, batch_size=256, device="cuda",
-              resample_interval=5, dead_threshold=1e-4):
-    """Train a TopK SAE with periodic dead-feature resampling.
+              resample_interval=5, dead_threshold=1e-4, aux_coeff=1/32):
+    """Train a TopK SAE with periodic dead-feature resampling and auxiliary loss.
 
     Args:
         resample_interval: resample dead features every this many epochs.
         dead_threshold:    features whose mean activation frequency falls below
                            this across the epoch are considered dead.
+        aux_coeff:         weight of the auxiliary loss that pushes dead features
+                           to activate on high-error tokens. Set 0 to disable.
     """
     d_model = activations.shape[-1]
     sae = TopKSAE(d_model, d_sae, k).to(device)
+
+    # Pre-encoder centering: initialise b_pre to the data mean so the encoder
+    # operates on zero-centred activations from the first step.
+    with torch.no_grad():
+        data_mean = activations.float().mean(dim=0).to(device)
+        sae.b_pre.data.copy_(data_mean)
+
     optimizer = torch.optim.Adam(sae.parameters(), lr=lr)
 
     dataset = TensorDataset(activations)
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+    total_steps = epochs * len(loader)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+        optimizer, T_max=total_steps, eta_min=lr / 10
+    )
+
+    # Dead-feature mask from the end of the previous epoch (used for aux loss)
+    prev_dead_mask = None
+
+    # Track best epoch by reconstruction loss. The decoder unit-norm projection
+    # after every step can fight Adam's moments and produce sporadic late-epoch
+    # spikes; saving the best-loss state shields the checkpoint from those.
+    best_loss = float("inf")
+    best_state = None
+    best_epoch = -1
 
     for epoch in range(epochs):
-        total_loss = 0
-        # Track per-feature activation counts across the epoch
+        total_recon = 0.0
         feature_counts = torch.zeros(d_sae, device=device)
         n_tokens = 0
         n_batches = 0
 
         for (batch,) in tqdm(loader, desc=f"Epoch {epoch+1}/{epochs}", leave=False):
             batch = batch.to(device).float()
-            x_hat, z_sparse = sae(batch)
+            x_hat, z_sparse, z_pre = sae(batch)
 
             recon_loss = (batch - x_hat).pow(2).mean()
-            optimizer.zero_grad()
-            recon_loss.backward()
-            optimizer.step()
+            loss = recon_loss
 
-            # Normalise decoder columns after each step
+            # Auxiliary loss: activate top-k dead features on the current batch
+            # and penalise their reconstruction error. This ensures dead features
+            # receive gradient even when they don't win the TopK competition.
+            if aux_coeff > 0 and prev_dead_mask is not None and prev_dead_mask.any():
+                dead_indices = prev_dead_mask.nonzero(as_tuple=True)[0]
+                k_aux = min(k * 16, len(dead_indices))
+                if k_aux > 0:
+                    z_dead_only = z_pre[:, dead_indices]  # (B, n_dead)
+                    topk_v, topk_local = torch.topk(z_dead_only, k_aux, dim=-1)
+                    topk_global = dead_indices[topk_local.reshape(-1)].reshape_as(topk_local)
+                    z_aux = torch.zeros_like(z_pre).scatter(-1, topk_global, topk_v)
+                    x_hat_aux = sae.decoder(z_aux)
+                    aux_loss = (batch - x_hat_aux).pow(2).mean()
+                    loss = recon_loss + aux_coeff * aux_loss
+
+            optimizer.zero_grad()
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(sae.parameters(), max_norm=1.0)
+            optimizer.step()
+            scheduler.step()
+
             with torch.no_grad():
                 sae.decoder.weight.data = nn.functional.normalize(
                     sae.decoder.weight.data, dim=0
                 )
 
-            total_loss += recon_loss.item()
+            total_recon += recon_loss.item()
             feature_counts += (z_sparse != 0).float().sum(dim=0)
             n_tokens += batch.shape[0]
             n_batches += 1
 
-        avg_loss = total_loss / n_batches
+        avg_loss = total_recon / n_batches
         feature_freq = feature_counts / n_tokens
         n_dead = (feature_freq < dead_threshold).sum().item()
         n_active = d_sae - n_dead
@@ -149,10 +187,20 @@ def train_sae(activations, d_sae, k, epochs=50, lr=3e-4, batch_size=256, device=
         print(f"  Epoch {epoch+1:3d}/{epochs}: recon_loss={avg_loss:.6f}  "
               f"active={n_active}/{d_sae}  dead={n_dead}")
 
-        # Resample dead features periodically (skip final epoch)
+        if avg_loss < best_loss:
+            best_loss = avg_loss
+            best_epoch = epoch + 1
+            best_state = {k_: v.detach().cpu().clone() for k_, v in sae.state_dict().items()}
+
+        prev_dead_mask = (feature_freq < dead_threshold)
+
         if (epoch + 1) % resample_interval == 0 and epoch < epochs - 1:
             dead_mask = feature_freq < dead_threshold
             resample_dead_features(sae, activations, dead_mask, device)
+
+    if best_state is not None:
+        sae.load_state_dict(best_state)
+        print(f"  [best] Restored epoch {best_epoch} (recon_loss={best_loss:.6f})")
 
     return sae
 
@@ -172,6 +220,8 @@ def main():
                         help="Resample dead features every N epochs")
     parser.add_argument("--dead_threshold", type=float, default=1e-4,
                         help="Features firing less than this fraction are considered dead")
+    parser.add_argument("--aux_coeff", type=float, default=1/32,
+                        help="Auxiliary loss coefficient for dead feature revival (0 to disable)")
     args = parser.parse_args()
 
     os.makedirs(args.save_dir, exist_ok=True)
@@ -183,6 +233,10 @@ def main():
 
     for act_file in activation_files:
         name = act_file.stem  # e.g., "pretrained_layer12"
+        save_path = os.path.join(args.save_dir, f"sae_{name}.pt")
+        if os.path.exists(save_path):
+            print(f"\n[skip] {save_path} already exists")
+            continue
         print(f"\n{'='*60}")
         print(f"Training SAE for: {name}")
         print(f"{'='*60}")
@@ -200,9 +254,9 @@ def main():
             batch_size=args.batch_size, device=args.device,
             resample_interval=args.resample_interval,
             dead_threshold=args.dead_threshold,
+            aux_coeff=args.aux_coeff,
         )
 
-        save_path = os.path.join(args.save_dir, f"sae_{name}.pt")
         torch.save({
             "state_dict": sae.state_dict(),
             "config": {

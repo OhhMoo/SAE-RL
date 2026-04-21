@@ -23,6 +23,8 @@ KNOWN_METRIC_ALIASES = {
     # WandB key → our canonical column name
     "actor/kl_penalty": "kl_div",
     "actor/kl_loss": "kl_div",
+    "actor/ppo_kl": "kl_div",
+    "actor/reward_kl_penalty": "kl_div",
     "critic/kl": "kl_div",
     "train/kl": "kl_div",
     "kl": "kl_div",
@@ -30,14 +32,22 @@ KNOWN_METRIC_ALIASES = {
     "train/reward": "reward",
     "reward": "reward",
     "critic/reward": "reward",
+    "critic/rewards/mean": "reward",
+    "critic/score/mean": "reward",
+    # verl response length columns
     "train/response_length": "response_length",
     "response_length": "response_length",
+    "response_length/mean": "response_length",
     "rollout/response_length": "response_length",
+    "response_length_non_aborted/mean": "response_length",
+    # verl solve rate / accuracy columns
     "train/solve_rate": "solve_rate",
     "val/solve_rate": "solve_rate",
     "test/solve_rate": "solve_rate",
     "train/acc": "solve_rate",
     "val/acc": "solve_rate",
+    "val-core/openai/gsm8k/acc/mean@1": "solve_rate",
+    "val-aux/openai/gsm8k/reward/mean@1": "solve_rate",
 }
 
 

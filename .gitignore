@@ -25,3 +25,12 @@ venv/
 
 # Weights & Biases
 wandb/
+
+# Run logs / terminal captures
+logs/
+output.txt
+*.log
+
+# macOS / editor cruft
+.DS_Store
+*.swp

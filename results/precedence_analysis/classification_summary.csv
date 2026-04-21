@@ -1,5 +1,5 @@
-layer,n_total,n_hacking,n_reasoning,n_stable,n_checkpoints
-6,7168,561,659,5948,16
-12,7168,611,523,6034,16
-18,7168,479,560,6129,16
-23,7168,2130,2491,2547,16
+layer,n_total,n_concise_rise,n_verbose_rise,n_stable,n_checkpoints
+6,7168,2305,1840,3023,6
+12,14336,3439,3142,7755,6
+18,14336,4551,4196,5589,6
+23,28672,1503,1678,25491,6

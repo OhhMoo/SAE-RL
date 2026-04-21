@@ -1,22 +1,32 @@
 #!/usr/bin/env python3
 """
 10_classify_features.py
-Classify SAE features into "reasoning", "hacking", or "stable" by comparing
-activation frequency across the clean learning phase vs the hacking phase.
+Classify SAE features by comparing activation frequency across the verbose phase
+(long outputs, low format compliance) vs the concise phase (short outputs, high
+format compliance).
+
+The PPO run never showed reward hacking: solve_rate was ~0.5% at step 0 and
+peaked at ~10%, with no performance cliff. What actually happened was format
+learning — the model transitioned from long wrong answers to short wrong answers
+between steps 50–100. Feature classes therefore reflect this transition, not
+reasoning vs hacking.
+
+  verbose_rise:  features more active before the format collapse (steps 0–50)
+  concise_rise:  features more active after the format collapse (steps 100–435)
+  stable:        frequency unchanged across training
 
 Inputs:
-  - checkpoints/saes/          (original 7 checkpoints, K=32 or matching K)
-  - checkpoints/saes_dense/    (dense checkpoints around onset, steps 110-190)
+  - checkpoints/saes/          (one SAE per (checkpoint, layer) pair)
   - data/activations/          (cached activation tensors)
 
 Outputs (to results/precedence_analysis/):
   - feature_frequencies_layer{N}.csv   rows=checkpoints, cols=feature indices
-  - feature_classification_layer{N}.csv  feature_idx, hacking_score, class
+  - feature_classification_layer{N}.csv  feature_idx, concise_score, class
   - classification_summary.csv          per-layer counts of each class
 
 Usage:
     python scripts/10_classify_features.py
-    python scripts/10_classify_features.py --sae_dir checkpoints/saes_k64_10ep --output_dir results/precedence_analysis_k64
+    python scripts/10_classify_features.py --sae_dir checkpoints/saes_k64 --output_dir results/precedence_analysis_k64
 """
 
 import argparse
@@ -37,11 +47,12 @@ class TopKSAE(nn.Module):
     def __init__(self, d_model, d_sae, k):
         super().__init__()
         self.k = k
+        self.b_pre = nn.Parameter(torch.zeros(d_model))
         self.encoder = nn.Linear(d_model, d_sae)
         self.decoder = nn.Linear(d_sae, d_model)
 
     def encode(self, x):
-        z = self.encoder(x)
+        z = self.encoder(x - self.b_pre)
         topk_vals, topk_idx = torch.topk(z, self.k, dim=-1)
         z_sparse = torch.zeros_like(z)
         z_sparse.scatter_(-1, topk_idx, topk_vals)
@@ -56,7 +67,7 @@ def load_sae(path: str, device: str = "cpu"):
     ckpt = torch.load(path, map_location=device, weights_only=False)
     cfg = ckpt["config"]
     sae = TopKSAE(cfg["d_model"], cfg["d_sae"], cfg["k"])
-    sae.load_state_dict(ckpt["state_dict"])
+    sae.load_state_dict(ckpt["state_dict"], strict=False)
     return sae.to(device).eval(), cfg
 
 
@@ -64,11 +75,10 @@ def load_sae(path: str, device: str = "cpu"):
 
 # All checkpoints in chronological order: original 7 + dense 9
 CHECKPOINT_ORDER = [
-    "sft",
+    "instruct_base",   # Qwen2.5-0.5B-Instruct, step 0 (no PPO)
     "ppo_step10",
     "ppo_step50",
     "ppo_step100",
-    # dense onset window
     "ppo_step110",
     "ppo_step120",
     "ppo_step130",
@@ -78,15 +88,13 @@ CHECKPOINT_ORDER = [
     "ppo_step170",
     "ppo_step180",
     "ppo_step190",
-    # hacking phase
     "ppo_step200",
     "ppo_step300",
     "ppo_step435",
 ]
 
-# Approximate PPO step for each checkpoint (for plotting)
 CHECKPOINT_TO_STEP = {
-    "sft": 0,
+    "instruct_base": 0,
     "ppo_step10": 10,
     "ppo_step50": 50,
     "ppo_step100": 100,
@@ -104,9 +112,16 @@ CHECKPOINT_TO_STEP = {
     "ppo_step435": 435,
 }
 
-# Phase definitions
-CLEAN_PHASE  = {"sft", "ppo_step10", "ppo_step50", "ppo_step100"}
-HACKING_PHASE = {"ppo_step200", "ppo_step300", "ppo_step435"}
+# Phase definitions will be determined empirically from training_curves.csv after
+# the v4 run. Placeholders below; update once the format-transition step is known.
+# Expected: verbose phase = instruct_base + first few PPO steps (before format collapse)
+#           concise phase = steps after format collapse through end of training
+VERBOSE_PHASE = {"instruct_base", "ppo_step10", "ppo_step50"}
+CONCISE_PHASE = {
+    "ppo_step100", "ppo_step110", "ppo_step120", "ppo_step130",
+    "ppo_step140", "ppo_step150", "ppo_step160", "ppo_step170",
+    "ppo_step180", "ppo_step190", "ppo_step200", "ppo_step300", "ppo_step435",
+}
 
 
 # ── Feature frequency computation ─────────────────────────────────────────────
@@ -130,9 +145,11 @@ def compute_feature_freq(sae, acts: torch.Tensor, device: str, batch_size: int =
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--sae_dir", type=str, default="checkpoints/saes",
-                        help="Primary SAE directory (original 7 checkpoints)")
-    parser.add_argument("--dense_sae_dir", type=str, default="checkpoints/saes_dense",
-                        help="Dense SAE directory (onset window checkpoints)")
+                        help="Primary SAE directory")
+    parser.add_argument("--dense_sae_dir", type=str, default="checkpoints/saes",
+                        help="Dense SAE directory (defaults to same as --sae_dir). "
+                             "Only set separately if you trained an extra dense-coverage "
+                             "sweep of SAEs in a second directory.")
     parser.add_argument("--activations_dir", type=str, default="data/activations")
     parser.add_argument("--output_dir", type=str, default="results/precedence_analysis")
     parser.add_argument("--layers", type=int, nargs="+", default=[6, 12, 18, 23])
@@ -224,32 +241,33 @@ def main():
         print(f"  Saved frequency matrix → {freq_csv}")
 
         # ── Classify features ──────────────────────────────────────────────
-        clean_mask  = np.array([s in CLEAN_PHASE  for s in stages_present])
-        hacking_mask = np.array([s in HACKING_PHASE for s in stages_present])
+        verbose_mask = np.array([s in VERBOSE_PHASE for s in stages_present])
+        concise_mask = np.array([s in CONCISE_PHASE for s in stages_present])
 
-        if clean_mask.sum() == 0 or hacking_mask.sum() == 0:
-            print("  [warn] Missing clean or hacking phase checkpoints — cannot classify")
+        if verbose_mask.sum() == 0 or concise_mask.sum() == 0:
+            print("  [warn] Missing verbose or concise phase checkpoints — cannot classify")
             continue
 
-        freq_clean  = freq_matrix[clean_mask].mean(axis=0)   # (d_sae,)
-        freq_hack   = freq_matrix[hacking_mask].mean(axis=0) # (d_sae,)
-        hacking_score = freq_hack - freq_clean                # positive → more active in hacking
+        freq_verbose = freq_matrix[verbose_mask].mean(axis=0)  # (d_sae,)
+        freq_concise = freq_matrix[concise_mask].mean(axis=0)  # (d_sae,)
+        # positive → feature becomes more active after format collapse
+        concise_score = freq_concise - freq_verbose
 
         # Classification
         labels = np.full(d_sae, "stable", dtype=object)
-        labels[hacking_score >  args.hacking_threshold] = "hacking"
-        labels[hacking_score < -args.hacking_threshold] = "reasoning"
+        labels[concise_score >  args.hacking_threshold] = "concise_rise"
+        labels[concise_score < -args.hacking_threshold] = "verbose_rise"
 
-        n_hacking   = (labels == "hacking").sum()
-        n_reasoning = (labels == "reasoning").sum()
-        n_stable    = (labels == "stable").sum()
-        print(f"  Classification:  hacking={n_hacking}  reasoning={n_reasoning}  stable={n_stable}")
+        n_concise_rise = (labels == "concise_rise").sum()
+        n_verbose_rise = (labels == "verbose_rise").sum()
+        n_stable       = (labels == "stable").sum()
+        print(f"  Classification:  concise_rise={n_concise_rise}  verbose_rise={n_verbose_rise}  stable={n_stable}")
 
         clf_df = pd.DataFrame({
             "feature_idx":   np.arange(d_sae),
-            "freq_clean":    freq_clean,
-            "freq_hack":     freq_hack,
-            "hacking_score": hacking_score,
+            "freq_verbose":  freq_verbose,
+            "freq_concise":  freq_concise,
+            "concise_score": concise_score,
             "class":         labels,
         })
         clf_csv = os.path.join(args.output_dir, f"feature_classification_layer{layer}.csv")
@@ -257,12 +275,12 @@ def main():
         print(f"  Saved classification → {clf_csv}")
 
         summary_rows.append({
-            "layer":      layer,
-            "n_total":    d_sae,
-            "n_hacking":  int(n_hacking),
-            "n_reasoning": int(n_reasoning),
-            "n_stable":   int(n_stable),
-            "n_checkpoints": len(freq_records),
+            "layer":           layer,
+            "n_total":         d_sae,
+            "n_concise_rise":  int(n_concise_rise),
+            "n_verbose_rise":  int(n_verbose_rise),
+            "n_stable":        int(n_stable),
+            "n_checkpoints":   len(freq_records),
         })
 
     # ── Summary ───────────────────────────────────────────────────────────────

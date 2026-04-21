@@ -1,7 +1,0 @@
-signal,onset_step
-sae_hacking_features,110
-sae_reasoning_features_decline,110
-kl_divergence_rise,160
-solve_rate_drop,165
-response_length_collapse,130
-reward_drop,161

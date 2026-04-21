@@ -1,0 +1,15 @@
+stage,ppo_step,phase,layer,n_ablated,ablation_type,solve_rate
+ppo_step100,100,early_concise,23,0,none,0.205
+ppo_step100,100,early_concise,23,10,concise_rise,0.165
+ppo_step100,100,early_concise,23,20,concise_rise,0.205
+ppo_step100,100,early_concise,23,50,concise_rise,0.205
+ppo_step100,100,early_concise,23,10,random,0.155
+ppo_step100,100,early_concise,23,20,random,0.155
+ppo_step100,100,early_concise,23,50,random,0.255
+ppo_step100,100,early_concise,18,0,none,0.205
+ppo_step100,100,early_concise,18,10,concise_rise,0.24
+ppo_step100,100,early_concise,18,20,concise_rise,0.275
+ppo_step100,100,early_concise,18,50,concise_rise,0.0
+ppo_step100,100,early_concise,18,10,random,0.215
+ppo_step100,100,early_concise,18,20,random,0.13
+ppo_step100,100,early_concise,18,50,random,0.135

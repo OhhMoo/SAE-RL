@@ -40,11 +40,12 @@ class TopKSAE(nn.Module):
         self.k = k
         self.d_model = d_model
         self.d_sae = d_sae
+        self.b_pre = nn.Parameter(torch.zeros(d_model))
         self.encoder = nn.Linear(d_model, d_sae, bias=True)
         self.decoder = nn.Linear(d_sae, d_model, bias=True)
 
     def encode(self, x):
-        z = self.encoder(x)
+        z = self.encoder(x - self.b_pre)
         topk_values, topk_indices = torch.topk(z, self.k, dim=-1)
         z_sparse = torch.zeros_like(z)
         z_sparse.scatter_(-1, topk_indices, topk_values)
@@ -59,7 +60,7 @@ def load_sae(path: str, device: str):
     ckpt = torch.load(path, map_location=device, weights_only=False)
     cfg = ckpt["config"]
     sae = TopKSAE(cfg["d_model"], cfg["d_sae"], cfg["k"])
-    sae.load_state_dict(ckpt["state_dict"])
+    sae.load_state_dict(ckpt["state_dict"], strict=False)
     return sae.to(device).eval(), cfg
 
 
@@ -165,17 +166,24 @@ def eval_model_delta_loss(
 # Main
 # ---------------------------------------------------------------------------
 
-STAGE_ORDER = ["sft", "ppo_step10", "ppo_step50", "ppo_step100",
-               "ppo_step200", "ppo_step300", "ppo_step435"]
+# PPO-without-SFT pipeline: stage 0 is the raw instruct model (baseline
+# before any RL updates), and later stages are merged PPO checkpoints.
+STAGE_ORDER = ["instruct_base", "ppo_step10", "ppo_step30", "ppo_step50",
+               "ppo_step80", "ppo_step100", "ppo_step120", "ppo_step140",
+               "ppo_step160", "ppo_step180", "ppo_step200"]
 
 STAGE_TO_MODEL = {
-    "sft":         "checkpoints/sft_merged",
-    "ppo_step10":  "checkpoints/ppo_merged/step_10",
-    "ppo_step50":  "checkpoints/ppo_merged/step_50",
-    "ppo_step100": "checkpoints/ppo_merged/step_100",
-    "ppo_step200": "checkpoints/ppo_merged/step_200",
-    "ppo_step300": "checkpoints/ppo_merged/step_300",
-    "ppo_step435": "checkpoints/ppo_merged/step_435",
+    "instruct_base": "Qwen/Qwen2.5-0.5B-Instruct",
+    "ppo_step10":    "checkpoints/ppo_merged/step_10",
+    "ppo_step30":    "checkpoints/ppo_merged/step_30",
+    "ppo_step50":    "checkpoints/ppo_merged/step_50",
+    "ppo_step80":    "checkpoints/ppo_merged/step_80",
+    "ppo_step100":   "checkpoints/ppo_merged/step_100",
+    "ppo_step120":   "checkpoints/ppo_merged/step_120",
+    "ppo_step140":   "checkpoints/ppo_merged/step_140",
+    "ppo_step160":   "checkpoints/ppo_merged/step_160",
+    "ppo_step180":   "checkpoints/ppo_merged/step_180",
+    "ppo_step200":   "checkpoints/ppo_merged/step_200",
 }
 
 

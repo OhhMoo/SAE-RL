@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 """
 12_auto_interp.py
-Auto-interpret top hacking and reasoning features using the Claude API.
+Auto-interpret top concise_rise and verbose_rise features using the Claude API.
+
+The classifier (10_classify_features.py) labels SAE features by whether they
+became more active after the verbose→concise format collapse during PPO. This
+script picks the strongest examples of each class and asks Claude to label what
+they represent.
 
 For each feature to interpret:
   1. Load the SAE and activation tensor for a target checkpoint
@@ -41,11 +46,12 @@ class TopKSAE(nn.Module):
     def __init__(self, d_model, d_sae, k):
         super().__init__()
         self.k = k
+        self.b_pre = nn.Parameter(torch.zeros(d_model))
         self.encoder = nn.Linear(d_model, d_sae)
         self.decoder = nn.Linear(d_sae, d_model)
 
     def encode(self, x):
-        z = self.encoder(x)
+        z = self.encoder(x - self.b_pre)
         topk_vals, topk_idx = torch.topk(z, self.k, dim=-1)
         z_sparse = torch.zeros_like(z)
         z_sparse.scatter_(-1, topk_idx, topk_vals)
@@ -60,7 +66,7 @@ def load_sae(path: str, device: str = "cpu"):
     ckpt = torch.load(path, map_location=device, weights_only=False)
     cfg = ckpt["config"]
     sae = TopKSAE(cfg["d_model"], cfg["d_sae"], cfg["k"])
-    sae.load_state_dict(ckpt["state_dict"])
+    sae.load_state_dict(ckpt["state_dict"], strict=False)
     return sae.to(device).eval(), cfg
 
 
@@ -119,26 +125,39 @@ def build_token_index(tokenizer, n_samples: int = 5000, max_length: int = 512,
 
 # ── Claude API call ───────────────────────────────────────────────────────────
 
+CLASS_DESCRIPTIONS = {
+    "concise_rise": (
+        "more active AFTER the verbose→concise format collapse during PPO "
+        "(i.e. characteristic of the short, format-compliant phase)"
+    ),
+    "verbose_rise": (
+        "more active BEFORE the verbose→concise format collapse during PPO "
+        "(i.e. characteristic of the early long, low-format-compliance phase)"
+    ),
+}
+
+
 def interpret_feature(client, examples: list[str], feature_class: str,
                       model: str = "claude-opus-4-6") -> str:
     """Call Claude API to interpret a feature given top-activating examples."""
     examples_str = "\n".join(f"  {i+1}. {ex!r}" for i, ex in enumerate(examples))
+    class_desc = CLASS_DESCRIPTIONS.get(feature_class, feature_class)
 
-    prompt = f"""I am analyzing internal features of a language model trained on math reasoning problems.
+    prompt = f"""I am analyzing internal features of a language model trained on GSM8k math reasoning with PPO.
 
-The following text snippets are from math problem contexts that most strongly activate a specific internal feature (a "hacking feature" — more active when the model uses shortcuts instead of genuine reasoning):
+The following text snippets are from math problem contexts that most strongly activate a specific internal feature. This feature is classified as "{feature_class}" — {class_desc}:
 
 {examples_str}
 
 Based on these activating examples:
 1. What concept or pattern does this feature likely represent?
-2. Is the pattern consistent with reward hacking behavior (e.g., format matching, answer copying, short outputs)?
+2. Does the pattern look more like a format/style cue (length, punctuation, template tokens) or a content/reasoning cue (numbers, operations, problem entities)?
 3. Give a short label (3-7 words) for this feature.
 
 Be concise. Format your response as:
 LABEL: <short label>
 CONCEPT: <1-2 sentences>
-HACKING_RELEVANT: yes/no/maybe
+KIND: format / reasoning / mixed
 """
     response = client.messages.create(
         model=model,
@@ -160,7 +179,7 @@ def main():
     parser.add_argument("--classification_dir", type=str, default="results/precedence_analysis")
     parser.add_argument("--output_dir", type=str, default="results/precedence_analysis")
     parser.add_argument("--n_features", type=int, default=20,
-                        help="Number of top hacking + top reasoning features to interpret")
+                        help="Number of top concise_rise + top verbose_rise features to interpret")
     parser.add_argument("--top_k_tokens", type=int, default=10,
                         help="Number of top-activating tokens per feature")
     parser.add_argument("--n_samples", type=int, default=3000,
@@ -193,17 +212,17 @@ def main():
         print("Run 10_classify_features.py first.")
         sys.exit(1)
 
-    clf_df = pd.read_csv(clf_csv).sort_values("hacking_score")
+    clf_df = pd.read_csv(clf_csv).sort_values("concise_score")
 
-    top_hacking   = clf_df[clf_df["class"] == "hacking"].nlargest(args.n_features, "hacking_score")
-    top_reasoning = clf_df[clf_df["class"] == "reasoning"].nsmallest(args.n_features, "hacking_score")
-    features_to_interp = pd.concat([top_hacking, top_reasoning])
+    top_concise = clf_df[clf_df["class"] == "concise_rise"].nlargest(args.n_features, "concise_score")
+    top_verbose = clf_df[clf_df["class"] == "verbose_rise"].nsmallest(args.n_features, "concise_score")
+    features_to_interp = pd.concat([top_concise, top_verbose])
 
-    print(f"Features to interpret: {len(top_hacking)} hacking, {len(top_reasoning)} reasoning")
+    print(f"Features to interpret: {len(top_concise)} concise_rise, {len(top_verbose)} verbose_rise")
 
     if args.dry_run:
         print("\n[dry run] Would interpret these features:")
-        print(features_to_interp[["feature_idx", "class", "hacking_score"]].to_string(index=False))
+        print(features_to_interp[["feature_idx", "class", "concise_score"]].to_string(index=False))
         return
 
     # ── Load SAE and activations ───────────────────────────────────────────
@@ -237,12 +256,11 @@ def main():
     print(f"  Feature activations shape: {z.shape}")
 
     # ── Build token text index ─────────────────────────────────────────────
-    model_path = f"checkpoints/saes/../ppo_merged/step_100"  # just need tokenizer
-    # Try to find any available tokenizer
+    # Any Qwen2.5-0.5B tokenizer works; prefer local merged checkpoints so we
+    # don't hit HF if offline, otherwise fall back to the base instruct model.
     tokenizer_path = None
     for candidate in [
         "checkpoints/ppo_merged/step_100",
-        "checkpoints/sft_merged",
         "Qwen/Qwen2.5-0.5B-Instruct",
     ]:
         if os.path.isdir(candidate) or "/" in candidate:
@@ -269,7 +287,7 @@ def main():
     for _, row in features_to_interp.iterrows():
         feat_idx = int(row["feature_idx"])
         feat_class = row["class"]
-        hacking_score = float(row["hacking_score"])
+        concise_score = float(row["concise_score"])
 
         # Get activation strengths for this feature across tokens
         feat_activations = z[:usable, feat_idx].numpy()
@@ -286,7 +304,7 @@ def main():
             print(f"  [skip] Feature {feat_idx} ({feat_class}): no activating tokens found")
             continue
 
-        print(f"  Interpreting feature {feat_idx} ({feat_class}, score={hacking_score:.4f})", end="", flush=True)
+        print(f"  Interpreting feature {feat_idx} ({feat_class}, score={concise_score:.4f})", end="", flush=True)
 
         try:
             interpretation = interpret_feature(client, top_examples, feat_class, args.model)
@@ -300,7 +318,7 @@ def main():
             "feature_idx":    feat_idx,
             "layer":          args.layer,
             "class":          feat_class,
-            "hacking_score":  hacking_score,
+            "concise_score":  concise_score,
             "top_examples":   top_examples,
             "interpretation": interpretation,
             "stage_used":     args.stage,
