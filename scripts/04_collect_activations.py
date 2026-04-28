@@ -98,6 +98,9 @@ def main():
                         help="Limit number of prompts (for quick testing)")
     parser.add_argument("--max_tokens", type=int, default=500_000,
                         help="Stop after this many real tokens per checkpoint (default 500k)")
+    parser.add_argument("--val_fraction", type=float, default=0.1,
+                        help="Fraction of tokens reserved as a held-out val split "
+                             "(taken from the tail so training prompts stay contiguous).")
     args = parser.parse_args()
 
     os.makedirs(args.save_dir, exist_ok=True)
@@ -123,11 +126,22 @@ def main():
     )
 
     for layer_idx, tensor in acts.items():
-        save_path = os.path.join(
-            args.save_dir, f"{args.checkpoint_name}_layer{layer_idx}.pt"
+        n_total = tensor.shape[0]
+        n_val = int(n_total * args.val_fraction)
+        n_train = n_total - n_val
+        train_tensor = tensor[:n_train]
+        val_tensor = tensor[n_train:]
+
+        train_path = os.path.join(
+            args.save_dir, f"{args.checkpoint_name}_layer{layer_idx}_train.pt"
         )
-        torch.save(tensor, save_path)
-        print(f"Saved layer {layer_idx}: {tensor.shape} -> {save_path}")
+        val_path = os.path.join(
+            args.save_dir, f"{args.checkpoint_name}_layer{layer_idx}_val.pt"
+        )
+        torch.save(train_tensor, train_path)
+        torch.save(val_tensor, val_path)
+        print(f"Saved layer {layer_idx}: train={train_tensor.shape} -> {train_path}")
+        print(f"                      val={val_tensor.shape} -> {val_path}")
 
 
 if __name__ == "__main__":

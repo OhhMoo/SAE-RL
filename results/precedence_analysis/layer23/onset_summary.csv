@@ -1,7 +1,0 @@
-signal,onset_step
-sae_concise_rise,100.0
-sae_verbose_rise_decline,100.0
-format_rate_rise,100.0
-response_length_collapse,
-solve_rate_rise,100.0
-kl_divergence_rise,

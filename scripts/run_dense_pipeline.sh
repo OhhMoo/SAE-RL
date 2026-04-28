@@ -4,8 +4,11 @@
 # For each checkpoint step:
 #   1. Merge FSDP actor checkpoint → flat HF model  (ppo_merged/step_N)
 #   2. Collect residual-stream activations (layers 6, 12, 18, 23)
-#   3. Train a 40-epoch TopK SAE (k=64, 8× expansion) on each (step, layer) pair
+#   3. Train a 40-epoch TopK SAE (k=64, 8× expansion) on each (step, layer) pair,
+#      warm-started from the previous stage's SAE so feature indices stay aligned
+#      across checkpoints (required for decoder-cosine drift to be meaningful).
 # Also handles the step-0 baseline (Qwen/Qwen2.5-0.5B-Instruct directly).
+# Warm-start chain: instruct_base → step10 → step30 → … → step200.
 #
 # Prerequisites:
 #   - PPO run complete in the sibling ppo_run/ folder:
@@ -94,6 +97,9 @@ fi
 
 echo "[done] Step 0 complete"
 
+# Warm-start lineage: each step's SAEs are initialised from the previous stage's.
+PREV_STAGE="$BASELINE_LABEL"
+
 for STEP in "${DENSE_STEPS[@]}"; do
     CKPT_DIR="$PPO_CKPT_ROOT/global_step_${STEP}"
     MERGED_DIR="$MERGE_ROOT/step_${STEP}"
@@ -170,7 +176,7 @@ for STEP in "${DENSE_STEPS[@]}"; do
     if $all_saes_exist; then
         echo "[skip] SAEs already trained for $STAGE_LABEL"
     else
-        echo "[train SAEs] $STAGE_LABEL"
+        echo "[train SAEs] $STAGE_LABEL (warm-start from $PREV_STAGE)"
         python scripts/05_train_sae.py \
             --activations_dir "$TEMP_ACT_DIR" \
             --save_dir        "$SAE_DIR" \
@@ -181,10 +187,13 @@ for STEP in "${DENSE_STEPS[@]}"; do
             --batch_size      512 \
             --device          cuda \
             --resample_interval 10 \
-            --dead_threshold  1e-4
+            --dead_threshold  1e-4 \
+            --init_from_stage "$PREV_STAGE" \
+            --init_from_dir   "$SAE_DIR"
     fi
 
     rm -rf "$TEMP_ACT_DIR"
+    PREV_STAGE="$STAGE_LABEL"
     echo "[done] Step $STEP complete"
 done
 

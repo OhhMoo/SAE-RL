@@ -12,6 +12,10 @@ __pycache__/
 *.egg-info/
 dist/
 build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
 
 # Environment
 .env
@@ -34,3 +38,5 @@ output.txt
 # macOS / editor cruft
 .DS_Store
 *.swp
+*.swo
+*~
