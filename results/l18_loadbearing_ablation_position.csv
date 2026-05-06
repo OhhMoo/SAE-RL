@@ -1,0 +1,4 @@
+chain,stage,k,ce_full,ce_load_all,ce_load_bos,ce_load_non,ce_rand_all,ce_rand_bos,ce_rand_non,delta_load_all,delta_load_bos,delta_load_non,delta_rand_all,delta_rand_bos,delta_rand_non,bos_share_load,nonbos_share_load,bos_share_rand,nonbos_share_rand
+flexible,ppo_step30,50,2.4532,4.1501,2.7351,3.9157,2.2799,2.2752,2.4541,+1.6969,+0.2820,+1.4625,-0.1733,-0.1779,+0.0009,0.166,0.862,1.027,-0.005
+strict,ppo_step30,50,2.4329,3.7752,2.6829,3.7765,2.4593,2.4525,2.4383,+1.3422,+0.2499,+1.3436,+0.0264,+0.0195,+0.0054,0.186,1.001,0.740,0.204
+shuffled,ppo_step30,50,2.4016,4.2104,3.2070,3.3946,2.2808,2.3141,2.3731,+1.8088,+0.8054,+0.9930,-0.1208,-0.0875,-0.0285,0.445,0.549,0.724,0.236

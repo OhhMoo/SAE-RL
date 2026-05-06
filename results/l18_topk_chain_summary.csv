@@ -1,0 +1,4 @@
+chain,n_features_fired,n_features_never_fired,mean_math_frac_topk_all,mean_math_frac_topk_fired_only,mean_max_act,mean_n_prompts_fired
+flexible,31,19,0.3650,0.4968,3.9687,47.08
+strict,48,2,0.3110,0.3177,5.3286,64.88
+shuffled,18,32,0.2410,0.4028,2.4974,27.60

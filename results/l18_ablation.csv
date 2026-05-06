@@ -1,0 +1,7 @@
+chain,stage,n_rw_full,n_rw_alive,n_random,rw_summed_density,ctrl_summed_density,density_match_ratio,ce_unpatched,ce_full_recon,ce_ablate_reweighted,ce_ablate_random,delta_rw_vs_full,delta_rand_vs_full,specificity_rw_minus_rand
+flexible,instruct_base,1621,1343,1343,3.0903,3.2540,1.0530,1.2773,2.5124,2.8066,3.2626,0.2942,0.7501,-0.4560
+flexible,ppo_step30,1621,1591,1591,4.1119,5.2547,1.2779,1.3691,2.4532,2.5051,2.7487,0.0519,0.2956,-0.2437
+strict,instruct_base,1633,1151,1151,2.8856,3.0298,1.0500,1.2773,2.5124,2.7928,3.2950,0.2803,0.7826,-0.5023
+strict,ppo_step30,1633,1563,1563,4.0381,5.5328,1.3702,1.3845,2.4329,2.4495,3.7945,0.0165,1.3616,-1.3450
+shuffled,instruct_base,1124,650,650,1.7287,1.7110,0.9898,1.2773,2.5178,2.5458,2.5052,0.0281,-0.0126,0.0406
+shuffled,ppo_step30,1124,976,976,2.5041,2.5383,1.0137,1.2821,2.4016,2.4612,2.4191,0.0596,0.0175,0.0421

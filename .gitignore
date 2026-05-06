@@ -1,5 +1,5 @@
 # Large data (regeneratable)
-data/activations/
+data/activations*/
 data/gsm8k/
 data/gsm8k_sft/
 
@@ -34,6 +34,12 @@ wandb/
 logs/
 output.txt
 *.log
+
+# Regeneratable analysis caches (density tensors, etc.)
+results/cache/
+
+# Paper drafting workspace (separate repo)
+writing/
 
 # macOS / editor cruft
 .DS_Store

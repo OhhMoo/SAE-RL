@@ -1,0 +1,248 @@
+feature_idx,feature_name,role,predicate,top_rank,prompt_idx,token_pos,token_str,predicate_pass,activation
+1622,leading_digit,loadbearing,leading_digit,0,93,150,1,1,13.2109
+1622,leading_digit,loadbearing,leading_digit,1,16,35,1,1,12.3281
+1622,leading_digit,loadbearing,leading_digit,2,79,54,1,1,12.1094
+1622,leading_digit,loadbearing,leading_digit,3,50,75,1,1,11.8828
+1622,leading_digit,loadbearing,leading_digit,4,75,129,1,1,11.5469
+1622,leading_digit,loadbearing,leading_digit,5,41,188,1,1,11.4219
+1622,leading_digit,loadbearing,leading_digit,6,63,83,1,1,11.2109
+1622,leading_digit,loadbearing,leading_digit,7,51,7,1,1,11.1875
+1622,leading_digit,loadbearing,leading_digit,8,48,57,1,1,11.1172
+1622,leading_digit,loadbearing,leading_digit,9,52,28,1,0,11.1094
+1622,leading_digit,loadbearing,leading_digit,10,20,66,1,1,11.0859
+1622,leading_digit,loadbearing,leading_digit,11,18,97,1,1,11.0703
+1622,leading_digit,loadbearing,leading_digit,12,77,69,1,0,11.0703
+1622,leading_digit,loadbearing,leading_digit,13,86,151,1,1,11.0547
+1622,leading_digit,loadbearing,leading_digit,14,50,80,1,1,11.0234
+1622,leading_digit,loadbearing,leading_digit,15,15,122,1,1,10.9844
+1622,leading_digit,loadbearing,leading_digit,16,64,100,1,1,10.8906
+1622,leading_digit,loadbearing,leading_digit,17,95,113,1,1,10.8750
+1622,leading_digit,loadbearing,leading_digit,18,69,84,1,1,10.8594
+1622,leading_digit,loadbearing,leading_digit,19,57,125,1,1,10.8516
+6557,calc_block_opener,loadbearing,calc_block_opener,0,84,96, <<,0,2.8770
+6557,calc_block_opener,loadbearing,calc_block_opener,1,2,231,=$,0,2.3496
+6557,calc_block_opener,loadbearing,calc_block_opener,2,49,143, =,0,2.3008
+6557,calc_block_opener,loadbearing,calc_block_opener,3,78,171, $,0,2.2793
+6557,calc_block_opener,loadbearing,calc_block_opener,4,68,9, Dr,0,2.2227
+6557,calc_block_opener,loadbearing,calc_block_opener,5,88,109, like,0,2.0840
+6557,calc_block_opener,loadbearing,calc_block_opener,6,52,124,=,0,1.9355
+6557,calc_block_opener,loadbearing,calc_block_opener,7,49,108, =,0,1.9170
+6557,calc_block_opener,loadbearing,calc_block_opener,8,81,134, =,0,1.8633
+6557,calc_block_opener,loadbearing,calc_block_opener,9,12,75, le,0,1.8359
+6557,calc_block_opener,loadbearing,calc_block_opener,10,19,117, Mar,0,1.7656
+6557,calc_block_opener,loadbearing,calc_block_opener,11,79,65,3,1,1.7588
+6557,calc_block_opener,loadbearing,calc_block_opener,12,61,114,*.,0,1.7256
+6557,calc_block_opener,loadbearing,calc_block_opener,13,8,276,=,0,1.6768
+6557,calc_block_opener,loadbearing,calc_block_opener,14,35,90,1,1,1.6094
+6557,calc_block_opener,loadbearing,calc_block_opener,15,45,196,5,0,1.5957
+6557,calc_block_opener,loadbearing,calc_block_opener,16,2,136,*,0,1.5703
+6557,calc_block_opener,loadbearing,calc_block_opener,17,78,125, <<,0,1.5664
+6557,calc_block_opener,loadbearing,calc_block_opener,18,32,74,7,1,1.5449
+6557,calc_block_opener,loadbearing,calc_block_opener,19,98,185, =,0,1.5361
+4460,control_for_1622,control,leading_digit,0,68,34, are,0,
+4460,control_for_1622,control,leading_digit,1,94,46, are,0,
+4460,control_for_1622,control,leading_digit,2,94,165, pets,0,
+4460,control_for_1622,control,leading_digit,3,68,7, girls,0,
+4460,control_for_1622,control,leading_digit,4,68,22, girls,0,
+4460,control_for_1622,control,leading_digit,5,68,104, students,0,
+4460,control_for_1622,control,leading_digit,6,68,76, boys,0,
+4460,control_for_1622,control,leading_digit,7,98,74, cars,0,
+4460,control_for_1622,control,leading_digit,8,49,47, units,0,
+4460,control_for_1622,control,leading_digit,9,68,33, teachers,0,
+4460,control_for_1622,control,leading_digit,10,49,38, units,0,
+4460,control_for_1622,control,leading_digit,11,67,113,ds,0,
+4460,control_for_1622,control,leading_digit,12,94,26, cats,0,
+4460,control_for_1622,control,leading_digit,13,59,28, are,0,
+4460,control_for_1622,control,leading_digit,14,67,125, gems,0,
+4460,control_for_1622,control,leading_digit,15,95,68, boys,0,
+4460,control_for_1622,control,leading_digit,16,68,53, girls,0,
+4460,control_for_1622,control,leading_digit,17,94,43, pets,0,
+4460,control_for_1622,control,leading_digit,18,94,29, dog,0,
+4460,control_for_1622,control,leading_digit,19,20,87, water,0,
+3512,control_for_1622,control,leading_digit,0,64,44, and,0,
+3512,control_for_1622,control,leading_digit,1,38,112,So,0,
+3512,control_for_1622,control,leading_digit,2,35,104,So,0,
+3512,control_for_1622,control,leading_digit,3,38,86,So,0,
+3512,control_for_1622,control,leading_digit,4,38,145,So,0,
+3512,control_for_1622,control,leading_digit,5,39,275,",",0,
+3512,control_for_1622,control,leading_digit,6,65,111,So,0,
+3512,control_for_1622,control,leading_digit,7,38,62,".
+",0,
+3512,control_for_1622,control,leading_digit,8,99,179,".
+",0,
+3512,control_for_1622,control,leading_digit,9,8,237,So,0,
+3512,control_for_1622,control,leading_digit,10,38,85,".
+",0,
+3512,control_for_1622,control,leading_digit,11,99,111,"
+",0,
+3512,control_for_1622,control,leading_digit,12,64,60,.,0,
+3512,control_for_1622,control,leading_digit,13,45,209,".
+",0,
+3512,control_for_1622,control,leading_digit,14,30,115,"
+",0,
+3512,control_for_1622,control,leading_digit,15,81,6,.,0,
+3512,control_for_1622,control,leading_digit,16,25,40,.,0,
+3512,control_for_1622,control,leading_digit,17,81,28,.,0,
+3512,control_for_1622,control,leading_digit,18,39,273,".
+",0,
+3512,control_for_1622,control,leading_digit,19,85,130, so,0,
+1893,control_for_1622,control,leading_digit,0,34,1,ob,0,
+1893,control_for_1622,control,leading_digit,1,18,7, o,0,
+1893,control_for_1622,control,leading_digit,2,18,8,me,0,
+1893,control_for_1622,control,leading_digit,3,34,102,ob,0,
+1893,control_for_1622,control,leading_digit,4,61,68,ch,0,
+1893,control_for_1622,control,leading_digit,5,29,1,lor,0,
+1893,control_for_1622,control,leading_digit,6,34,37,ob,0,
+1893,control_for_1622,control,leading_digit,7,11,1,ou,0,
+1893,control_for_1622,control,leading_digit,8,60,6, oranges,0,
+1893,control_for_1622,control,leading_digit,9,64,129, Olivia,0,
+1893,control_for_1622,control,leading_digit,10,41,30, Polly,0,
+1893,control_for_1622,control,leading_digit,11,1,1, robe,0,
+1893,control_for_1622,control,leading_digit,12,41,72, Polly,0,
+1893,control_for_1622,control,leading_digit,13,97,54, Tom,0,
+1893,control_for_1622,control,leading_digit,14,74,43, pot,0,
+1893,control_for_1622,control,leading_digit,15,74,279,on,0,
+1893,control_for_1622,control,leading_digit,16,83,4, rose,0,
+1893,control_for_1622,control,leading_digit,17,20,102, orange,0,
+1893,control_for_1622,control,leading_digit,18,60,34, oranges,0,
+1893,control_for_1622,control,leading_digit,19,20,7, orange,0,
+2073,control_for_1622,control,leading_digit,0,5,29,0,0,
+2073,control_for_1622,control,leading_digit,1,43,176,0,0,
+2073,control_for_1622,control,leading_digit,2,8,85,0,0,
+2073,control_for_1622,control,leading_digit,3,8,12,0,0,
+2073,control_for_1622,control,leading_digit,4,43,128,0,0,
+2073,control_for_1622,control,leading_digit,5,47,18,0,0,
+2073,control_for_1622,control,leading_digit,6,43,58,0,0,
+2073,control_for_1622,control,leading_digit,7,17,27,0,0,
+2073,control_for_1622,control,leading_digit,8,4,72,5,0,
+2073,control_for_1622,control,leading_digit,9,43,14,0,0,
+2073,control_for_1622,control,leading_digit,10,77,51,0,0,
+2073,control_for_1622,control,leading_digit,11,43,24,0,0,
+2073,control_for_1622,control,leading_digit,12,93,11,0,0,
+2073,control_for_1622,control,leading_digit,13,62,163,0,0,
+2073,control_for_1622,control,leading_digit,14,8,65,0,0,
+2073,control_for_1622,control,leading_digit,15,16,37,0,0,
+2073,control_for_1622,control,leading_digit,16,58,101,5,0,
+2073,control_for_1622,control,leading_digit,17,24,58,5,0,
+2073,control_for_1622,control,leading_digit,18,41,25,0,1,
+2073,control_for_1622,control,leading_digit,19,64,36,0,0,
+5402,control_for_1622,control,leading_digit,0,46,6,0,0,
+5402,control_for_1622,control,leading_digit,1,46,5,8,1,
+5402,control_for_1622,control,leading_digit,2,60,5,5,0,
+5402,control_for_1622,control,leading_digit,3,38,4,0,0,
+5402,control_for_1622,control,leading_digit,4,50,12,5,1,
+5402,control_for_1622,control,leading_digit,5,81,4,0,0,
+5402,control_for_1622,control,leading_digit,6,10,6,0,0,
+5402,control_for_1622,control,leading_digit,7,43,13,5,1,
+5402,control_for_1622,control,leading_digit,8,99,13,8,0,
+5402,control_for_1622,control,leading_digit,9,0,7,6,0,
+5402,control_for_1622,control,leading_digit,10,52,18,5,0,
+5402,control_for_1622,control,leading_digit,11,35,7,0,0,
+5402,control_for_1622,control,leading_digit,12,71,13,0,0,
+5402,control_for_1622,control,leading_digit,13,64,36,0,0,
+5402,control_for_1622,control,leading_digit,14,99,3, avid,0,
+5402,control_for_1622,control,leading_digit,15,9,11,0,0,
+5402,control_for_1622,control,leading_digit,16,67,17,5,0,
+5402,control_for_1622,control,leading_digit,17,62,11,0,0,
+5402,control_for_1622,control,leading_digit,18,28,19,0,0,
+5402,control_for_1622,control,leading_digit,19,88,9,0,0,
+5747,control_for_6557,control,calc_block_opener,0,77,114,=,0,
+5747,control_for_6557,control,calc_block_opener,1,38,159,=,0,
+5747,control_for_6557,control,calc_block_opener,2,63,176,4,0,
+5747,control_for_6557,control,calc_block_opener,3,64,115,=,0,
+5747,control_for_6557,control,calc_block_opener,4,53,117,4,0,
+5747,control_for_6557,control,calc_block_opener,5,63,84,2,0,
+5747,control_for_6557,control,calc_block_opener,6,4,135,2,0,
+5747,control_for_6557,control,calc_block_opener,7,88,149,8,0,
+5747,control_for_6557,control,calc_block_opener,8,6,81, Charleston,0,
+5747,control_for_6557,control,calc_block_opener,9,7,93,4,0,
+5747,control_for_6557,control,calc_block_opener,10,65,59,=,0,
+5747,control_for_6557,control,calc_block_opener,11,57,98,5,0,
+5747,control_for_6557,control,calc_block_opener,12,61,107,1,0,
+5747,control_for_6557,control,calc_block_opener,13,47,106,5,0,
+5747,control_for_6557,control,calc_block_opener,14,23,45,5,0,
+5747,control_for_6557,control,calc_block_opener,15,39,231,=,0,
+5747,control_for_6557,control,calc_block_opener,16,51,57,4,0,
+5747,control_for_6557,control,calc_block_opener,17,80,56,=,0,
+5747,control_for_6557,control,calc_block_opener,18,4,133,3,0,
+5747,control_for_6557,control,calc_block_opener,19,66,104,5,1,
+3565,control_for_6557,control,calc_block_opener,0,90,77, he,0,
+3565,control_for_6557,control,calc_block_opener,1,15,95, he,0,
+3565,control_for_6557,control,calc_block_opener,2,43,213, I,0,
+3565,control_for_6557,control,calc_block_opener,3,39,57, she,0,
+3565,control_for_6557,control,calc_block_opener,4,15,206, he,0,
+3565,control_for_6557,control,calc_block_opener,5,41,131,stone,0,
+3565,control_for_6557,control,calc_block_opener,6,15,71, is,0,
+3565,control_for_6557,control,calc_block_opener,7,48,111,8,1,
+3565,control_for_6557,control,calc_block_opener,8,15,151, he,0,
+3565,control_for_6557,control,calc_block_opener,9,5,114,6,1,
+3565,control_for_6557,control,calc_block_opener,10,87,43,'ve,0,
+3565,control_for_6557,control,calc_block_opener,11,15,55, market,0,
+3565,control_for_6557,control,calc_block_opener,12,39,150, is,0,
+3565,control_for_6557,control,calc_block_opener,13,71,88,0,0,
+3565,control_for_6557,control,calc_block_opener,14,7,243,0,0,
+3565,control_for_6557,control,calc_block_opener,15,36,117,0,0,
+3565,control_for_6557,control,calc_block_opener,16,39,149, time,0,
+3565,control_for_6557,control,calc_block_opener,17,15,70, merchant,0,
+3565,control_for_6557,control,calc_block_opener,18,38,34, he,0,
+3565,control_for_6557,control,calc_block_opener,19,61,86,0,0,
+4560,control_for_6557,control,calc_block_opener,0,71,9, one,0,
+4560,control_for_6557,control,calc_block_opener,1,74,36, for,0,
+4560,control_for_6557,control,calc_block_opener,2,29,82, $,0,
+4560,control_for_6557,control,calc_block_opener,3,71,10, having,0,
+4560,control_for_6557,control,calc_block_opener,4,39,170,3,1,
+4560,control_for_6557,control,calc_block_opener,5,71,18, one,0,
+4560,control_for_6557,control,calc_block_opener,6,90,22, dinosaur,0,
+4560,control_for_6557,control,calc_block_opener,7,70,24, class,0,
+4560,control_for_6557,control,calc_block_opener,8,61,117,1,0,
+4560,control_for_6557,control,calc_block_opener,9,13,165, x,0,
+4560,control_for_6557,control,calc_block_opener,10,21,67,1,0,
+4560,control_for_6557,control,calc_block_opener,11,73,139,7,0,
+4560,control_for_6557,control,calc_block_opener,12,98,14, through,0,
+4560,control_for_6557,control,calc_block_opener,13,39,6, rate,0,
+4560,control_for_6557,control,calc_block_opener,14,74,35,olds,0,
+4560,control_for_6557,control,calc_block_opener,15,22,19, DVD,0,
+4560,control_for_6557,control,calc_block_opener,16,30,104,8,0,
+4560,control_for_6557,control,calc_block_opener,17,5,69,0,0,
+4560,control_for_6557,control,calc_block_opener,18,57,69, not,0,
+4560,control_for_6557,control,calc_block_opener,19,39,230,6,1,
+6442,control_for_6557,control,calc_block_opener,0,2,246,=,0,
+6442,control_for_6557,control,calc_block_opener,1,81,135, ,0,
+6442,control_for_6557,control,calc_block_opener,2,28,100,=,0,
+6442,control_for_6557,control,calc_block_opener,3,25,177,=,0,
+6442,control_for_6557,control,calc_block_opener,4,79,93,=,0,
+6442,control_for_6557,control,calc_block_opener,5,44,259, $,0,
+6442,control_for_6557,control,calc_block_opener,6,25,170, $,0,
+6442,control_for_6557,control,calc_block_opener,7,94,25, two,0,
+6442,control_for_6557,control,calc_block_opener,8,94,5, number,0,
+6442,control_for_6557,control,calc_block_opener,9,24,72,",",0,
+6442,control_for_6557,control,calc_block_opener,10,10,4, ,0,
+6442,control_for_6557,control,calc_block_opener,11,46,185,=,0,
+6442,control_for_6557,control,calc_block_opener,12,6,4, as,0,
+6442,control_for_6557,control,calc_block_opener,13,4,53, ,0,
+6442,control_for_6557,control,calc_block_opener,14,35,128,0,0,
+6442,control_for_6557,control,calc_block_opener,15,6,2, has,0,
+6442,control_for_6557,control,calc_block_opener,16,36,66,0,0,
+6442,control_for_6557,control,calc_block_opener,17,84,72, ,0,
+6442,control_for_6557,control,calc_block_opener,18,94,12, than,0,
+6442,control_for_6557,control,calc_block_opener,19,64,104, /,0,
+4304,control_for_6557,control,calc_block_opener,0,38,37, ,0,
+4304,control_for_6557,control,calc_block_opener,1,58,68, ,0,
+4304,control_for_6557,control,calc_block_opener,2,61,55, ,0,
+4304,control_for_6557,control,calc_block_opener,3,44,61,",",0,
+4304,control_for_6557,control,calc_block_opener,4,12,50,.,0,
+4304,control_for_6557,control,calc_block_opener,5,38,36,.,0,
+4304,control_for_6557,control,calc_block_opener,6,65,31, ,0,
+4304,control_for_6557,control,calc_block_opener,7,61,38, ,0,
+4304,control_for_6557,control,calc_block_opener,8,32,27, ,0,
+4304,control_for_6557,control,calc_block_opener,9,70,41,",",0,
+4304,control_for_6557,control,calc_block_opener,10,58,67,.,0,
+4304,control_for_6557,control,calc_block_opener,11,38,17, ,0,
+4304,control_for_6557,control,calc_block_opener,12,0,49,.,0,
+4304,control_for_6557,control,calc_block_opener,13,4,77, ,0,
+4304,control_for_6557,control,calc_block_opener,14,58,56, ,0,
+4304,control_for_6557,control,calc_block_opener,15,50,26,.,0,
+4304,control_for_6557,control,calc_block_opener,16,53,84, ,0,
+4304,control_for_6557,control,calc_block_opener,17,64,60,.,0,
+4304,control_for_6557,control,calc_block_opener,18,47,41,.,0,
+4304,control_for_6557,control,calc_block_opener,19,8,88, ,0,

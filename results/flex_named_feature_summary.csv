@@ -1,0 +1,9 @@
+chain,feature_idx,role,delta_ce,density,max_act,n_fired,predicate,n_contexts,n_pass,pass_rate
+flexible,6265,loadbearing,+0.0810,0.0562,7.9531,76,leading_digit,20,0,0.0000
+flexible,6265,loadbearing,+0.0810,0.0562,7.9531,76,calc_block_opener,20,0,0.0000
+flexible,3799,loadbearing,+0.0767,0.0076,8.8984,100,leading_digit,20,19,0.9500
+flexible,3799,loadbearing,+0.0767,0.0076,8.8984,100,calc_block_opener,20,0,0.0000
+flexible,1304,loadbearing,+0.0644,0.0009,6.3516,100,leading_digit,20,9,0.4500
+flexible,1304,loadbearing,+0.0644,0.0009,6.3516,100,calc_block_opener,20,0,0.0000
+flexible,1622,cross_chain_in_K,+0.0143,0.0237,12.5391,98,leading_digit,20,20,1.0000
+flexible,1622,cross_chain_in_K,+0.0143,0.0237,12.5391,98,calc_block_opener,20,0,0.0000

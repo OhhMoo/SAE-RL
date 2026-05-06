@@ -1,8 +1,6 @@
 """
 Step 1: Prepare GSM8k for PPO/RL (``prompt`` + reward_model).
 
-For supervised fine-tuning use ``01b_prepare_sft_data.py`` instead (``messages`` column).
-
 Usage:
     python scripts/01_prepare_data.py --save_dir data/gsm8k
 """

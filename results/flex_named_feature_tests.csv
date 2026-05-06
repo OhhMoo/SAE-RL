@@ -1,0 +1,181 @@
+feature_idx,role,delta_ce,n_fired,predicate,top_rank,prompt_idx,token_pos,token_str,predicate_pass,activation
+6265,loadbearing,+0.0810,76,leading_digit,0,97,2,a,0,7.9531
+6265,loadbearing,+0.0810,76,leading_digit,1,17,1,ill,0,6.7773
+6265,loadbearing,+0.0810,76,leading_digit,2,42,1,ma,0,6.6680
+6265,loadbearing,+0.0810,76,leading_digit,3,29,2,ia,0,6.6484
+6265,loadbearing,+0.0810,76,leading_digit,4,41,72, Polly,0,6.6328
+6265,loadbearing,+0.0810,76,leading_digit,5,34,2,han,0,6.5234
+6265,loadbearing,+0.0810,76,leading_digit,6,25,1,ie,0,6.3633
+6265,loadbearing,+0.0810,76,leading_digit,7,9,1,iza,0,6.2695
+6265,loadbearing,+0.0810,76,leading_digit,8,11,2,la,0,6.2539
+6265,loadbearing,+0.0810,76,leading_digit,9,64,1,ia,0,6.2500
+6265,loadbearing,+0.0810,76,leading_digit,10,88,2,n,0,6.1133
+6265,loadbearing,+0.0810,76,leading_digit,11,63,1,ena,0,5.9609
+6265,loadbearing,+0.0810,76,leading_digit,12,21,14, Samantha,0,5.9492
+6265,loadbearing,+0.0810,76,leading_digit,13,13,1,anie,0,5.8555
+6265,loadbearing,+0.0810,76,leading_digit,14,7,1,la,0,5.6836
+6265,loadbearing,+0.0810,76,leading_digit,15,13,72, Melanie,0,5.6641
+6265,loadbearing,+0.0810,76,leading_digit,16,61,8, daughter,0,5.6484
+6265,loadbearing,+0.0810,76,leading_digit,17,21,52, Samantha,0,5.6406
+6265,loadbearing,+0.0810,76,leading_digit,18,17,105, Jill,0,5.6289
+6265,loadbearing,+0.0810,76,leading_digit,19,95,29, girl,0,5.6250
+6265,loadbearing,+0.0810,76,calc_block_opener,0,97,2,a,0,7.9531
+6265,loadbearing,+0.0810,76,calc_block_opener,1,17,1,ill,0,6.7773
+6265,loadbearing,+0.0810,76,calc_block_opener,2,42,1,ma,0,6.6680
+6265,loadbearing,+0.0810,76,calc_block_opener,3,29,2,ia,0,6.6484
+6265,loadbearing,+0.0810,76,calc_block_opener,4,41,72, Polly,0,6.6328
+6265,loadbearing,+0.0810,76,calc_block_opener,5,34,2,han,0,6.5234
+6265,loadbearing,+0.0810,76,calc_block_opener,6,25,1,ie,0,6.3633
+6265,loadbearing,+0.0810,76,calc_block_opener,7,9,1,iza,0,6.2695
+6265,loadbearing,+0.0810,76,calc_block_opener,8,11,2,la,0,6.2539
+6265,loadbearing,+0.0810,76,calc_block_opener,9,64,1,ia,0,6.2500
+6265,loadbearing,+0.0810,76,calc_block_opener,10,88,2,n,0,6.1133
+6265,loadbearing,+0.0810,76,calc_block_opener,11,63,1,ena,0,5.9609
+6265,loadbearing,+0.0810,76,calc_block_opener,12,21,14, Samantha,0,5.9492
+6265,loadbearing,+0.0810,76,calc_block_opener,13,13,1,anie,0,5.8555
+6265,loadbearing,+0.0810,76,calc_block_opener,14,7,1,la,0,5.6836
+6265,loadbearing,+0.0810,76,calc_block_opener,15,13,72, Melanie,0,5.6641
+6265,loadbearing,+0.0810,76,calc_block_opener,16,61,8, daughter,0,5.6484
+6265,loadbearing,+0.0810,76,calc_block_opener,17,21,52, Samantha,0,5.6406
+6265,loadbearing,+0.0810,76,calc_block_opener,18,17,105, Jill,0,5.6289
+6265,loadbearing,+0.0810,76,calc_block_opener,19,95,29, girl,0,5.6250
+3799,loadbearing,+0.0767,100,leading_digit,0,73,103,1,1,8.8984
+3799,loadbearing,+0.0767,100,leading_digit,1,90,218,2,1,8.2969
+3799,loadbearing,+0.0767,100,leading_digit,2,72,145,2,1,8.2891
+3799,loadbearing,+0.0767,100,leading_digit,3,90,200,=,1,7.5469
+3799,loadbearing,+0.0767,100,leading_digit,4,74,214, ,1,7.5195
+3799,loadbearing,+0.0767,100,leading_digit,5,37,119,1,1,7.4062
+3799,loadbearing,+0.0767,100,leading_digit,6,59,112,1,1,7.3359
+3799,loadbearing,+0.0767,100,leading_digit,7,73,107,1,1,7.3086
+3799,loadbearing,+0.0767,100,leading_digit,8,74,337,8,1,7.1836
+3799,loadbearing,+0.0767,100,leading_digit,9,61,153,1,1,7.1719
+3799,loadbearing,+0.0767,100,leading_digit,10,63,185,1,1,7.0820
+3799,loadbearing,+0.0767,100,leading_digit,11,9,217,4,1,7.0508
+3799,loadbearing,+0.0767,100,leading_digit,12,61,139,1,1,7.0156
+3799,loadbearing,+0.0767,100,leading_digit,13,73,95, $,0,6.9961
+3799,loadbearing,+0.0767,100,leading_digit,14,2,240,1,1,6.9883
+3799,loadbearing,+0.0767,100,leading_digit,15,82,84,6,1,6.9531
+3799,loadbearing,+0.0767,100,leading_digit,16,74,200, $,1,6.9102
+3799,loadbearing,+0.0767,100,leading_digit,17,94,198,3,1,6.9023
+3799,loadbearing,+0.0767,100,leading_digit,18,72,144, ,1,6.8984
+3799,loadbearing,+0.0767,100,leading_digit,19,70,215,4,1,6.8711
+3799,loadbearing,+0.0767,100,calc_block_opener,0,73,103,1,0,8.8984
+3799,loadbearing,+0.0767,100,calc_block_opener,1,90,218,2,0,8.2969
+3799,loadbearing,+0.0767,100,calc_block_opener,2,72,145,2,0,8.2891
+3799,loadbearing,+0.0767,100,calc_block_opener,3,90,200,=,0,7.5469
+3799,loadbearing,+0.0767,100,calc_block_opener,4,74,214, ,0,7.5195
+3799,loadbearing,+0.0767,100,calc_block_opener,5,37,119,1,0,7.4062
+3799,loadbearing,+0.0767,100,calc_block_opener,6,59,112,1,0,7.3359
+3799,loadbearing,+0.0767,100,calc_block_opener,7,73,107,1,0,7.3086
+3799,loadbearing,+0.0767,100,calc_block_opener,8,74,337,8,0,7.1836
+3799,loadbearing,+0.0767,100,calc_block_opener,9,61,153,1,0,7.1719
+3799,loadbearing,+0.0767,100,calc_block_opener,10,63,185,1,0,7.0820
+3799,loadbearing,+0.0767,100,calc_block_opener,11,9,217,4,0,7.0508
+3799,loadbearing,+0.0767,100,calc_block_opener,12,61,139,1,0,7.0156
+3799,loadbearing,+0.0767,100,calc_block_opener,13,73,95, $,0,6.9961
+3799,loadbearing,+0.0767,100,calc_block_opener,14,2,240,1,0,6.9883
+3799,loadbearing,+0.0767,100,calc_block_opener,15,82,84,6,0,6.9531
+3799,loadbearing,+0.0767,100,calc_block_opener,16,74,200, $,0,6.9102
+3799,loadbearing,+0.0767,100,calc_block_opener,17,94,198,3,0,6.9023
+3799,loadbearing,+0.0767,100,calc_block_opener,18,72,144, ,0,6.8984
+3799,loadbearing,+0.0767,100,calc_block_opener,19,70,215,4,0,6.8711
+1304,loadbearing,+0.0644,100,leading_digit,0,19,50, (,0,6.3516
+1304,loadbearing,+0.0644,100,leading_digit,1,60,48, (,1,5.5820
+1304,loadbearing,+0.0644,100,leading_digit,2,84,50, (,0,4.3047
+1304,loadbearing,+0.0644,100,leading_digit,3,15,117,*(,1,3.7129
+1304,loadbearing,+0.0644,100,leading_digit,4,31,75, (,1,3.6445
+1304,loadbearing,+0.0644,100,leading_digit,5,26,72, (,1,3.5527
+1304,loadbearing,+0.0644,100,leading_digit,6,33,63,"
+",1,3.2812
+1304,loadbearing,+0.0644,100,leading_digit,7,39,160,*(,1,3.2344
+1304,loadbearing,+0.0644,100,leading_digit,8,48,114,=,1,3.1992
+1304,loadbearing,+0.0644,100,leading_digit,9,40,83,".
+",0,2.9844
+1304,loadbearing,+0.0644,100,leading_digit,10,88,106,"
+",0,2.9043
+1304,loadbearing,+0.0644,100,leading_digit,11,60,107,"
+",0,2.8340
+1304,loadbearing,+0.0644,100,leading_digit,12,14,152,".
+",0,2.7598
+1304,loadbearing,+0.0644,100,leading_digit,13,15,174,*(,1,2.7266
+1304,loadbearing,+0.0644,100,leading_digit,14,88,146,"
+",0,2.7246
+1304,loadbearing,+0.0644,100,leading_digit,15,97,151,".
+",0,2.7012
+1304,loadbearing,+0.0644,100,leading_digit,16,32,84,"
+",0,2.6816
+1304,loadbearing,+0.0644,100,leading_digit,17,60,118, <<,1,2.6602
+1304,loadbearing,+0.0644,100,leading_digit,18,84,69,".
+",0,2.5938
+1304,loadbearing,+0.0644,100,leading_digit,19,34,124,".
+",0,2.5547
+1304,loadbearing,+0.0644,100,calc_block_opener,0,19,50, (,0,6.3516
+1304,loadbearing,+0.0644,100,calc_block_opener,1,60,48, (,0,5.5820
+1304,loadbearing,+0.0644,100,calc_block_opener,2,84,50, (,0,4.3047
+1304,loadbearing,+0.0644,100,calc_block_opener,3,15,117,*(,0,3.7129
+1304,loadbearing,+0.0644,100,calc_block_opener,4,31,75, (,0,3.6445
+1304,loadbearing,+0.0644,100,calc_block_opener,5,26,72, (,0,3.5527
+1304,loadbearing,+0.0644,100,calc_block_opener,6,33,63,"
+",0,3.2812
+1304,loadbearing,+0.0644,100,calc_block_opener,7,39,160,*(,0,3.2344
+1304,loadbearing,+0.0644,100,calc_block_opener,8,48,114,=,0,3.1992
+1304,loadbearing,+0.0644,100,calc_block_opener,9,40,83,".
+",0,2.9844
+1304,loadbearing,+0.0644,100,calc_block_opener,10,88,106,"
+",0,2.9043
+1304,loadbearing,+0.0644,100,calc_block_opener,11,60,107,"
+",0,2.8340
+1304,loadbearing,+0.0644,100,calc_block_opener,12,14,152,".
+",0,2.7598
+1304,loadbearing,+0.0644,100,calc_block_opener,13,15,174,*(,0,2.7266
+1304,loadbearing,+0.0644,100,calc_block_opener,14,88,146,"
+",0,2.7246
+1304,loadbearing,+0.0644,100,calc_block_opener,15,97,151,".
+",0,2.7012
+1304,loadbearing,+0.0644,100,calc_block_opener,16,32,84,"
+",0,2.6816
+1304,loadbearing,+0.0644,100,calc_block_opener,17,60,118, <<,0,2.6602
+1304,loadbearing,+0.0644,100,calc_block_opener,18,84,69,".
+",0,2.5938
+1304,loadbearing,+0.0644,100,calc_block_opener,19,34,124,".
+",0,2.5547
+1622,cross_chain_in_K,+0.0143,98,leading_digit,0,16,35,1,1,12.5391
+1622,cross_chain_in_K,+0.0143,98,leading_digit,1,93,150,1,1,12.3359
+1622,cross_chain_in_K,+0.0143,98,leading_digit,2,48,57,1,1,12.0625
+1622,cross_chain_in_K,+0.0143,98,leading_digit,3,79,54,1,1,11.9453
+1622,cross_chain_in_K,+0.0143,98,leading_digit,4,41,188,1,1,11.9141
+1622,cross_chain_in_K,+0.0143,98,leading_digit,5,50,75,1,1,11.9141
+1622,cross_chain_in_K,+0.0143,98,leading_digit,6,75,129,1,1,11.6406
+1622,cross_chain_in_K,+0.0143,98,leading_digit,7,95,113,1,1,11.5547
+1622,cross_chain_in_K,+0.0143,98,leading_digit,8,63,83,1,1,11.4609
+1622,cross_chain_in_K,+0.0143,98,leading_digit,9,51,7,1,1,11.3828
+1622,cross_chain_in_K,+0.0143,98,leading_digit,10,95,145,1,1,11.3281
+1622,cross_chain_in_K,+0.0143,98,leading_digit,11,49,134,1,1,11.2969
+1622,cross_chain_in_K,+0.0143,98,leading_digit,12,64,100,1,1,11.2500
+1622,cross_chain_in_K,+0.0143,98,leading_digit,13,20,66,1,1,11.2422
+1622,cross_chain_in_K,+0.0143,98,leading_digit,14,48,71,1,1,11.1172
+1622,cross_chain_in_K,+0.0143,98,leading_digit,15,14,157,1,1,11.0078
+1622,cross_chain_in_K,+0.0143,98,leading_digit,16,14,121,1,1,11.0000
+1622,cross_chain_in_K,+0.0143,98,leading_digit,17,13,184,1,1,10.9766
+1622,cross_chain_in_K,+0.0143,98,leading_digit,18,57,125,1,1,10.9766
+1622,cross_chain_in_K,+0.0143,98,leading_digit,19,86,151,1,1,10.9609
+1622,cross_chain_in_K,+0.0143,98,calc_block_opener,0,16,35,1,0,12.5391
+1622,cross_chain_in_K,+0.0143,98,calc_block_opener,1,93,150,1,0,12.3359
+1622,cross_chain_in_K,+0.0143,98,calc_block_opener,2,48,57,1,0,12.0625
+1622,cross_chain_in_K,+0.0143,98,calc_block_opener,3,79,54,1,0,11.9453
+1622,cross_chain_in_K,+0.0143,98,calc_block_opener,4,41,188,1,0,11.9141
+1622,cross_chain_in_K,+0.0143,98,calc_block_opener,5,50,75,1,0,11.9141
+1622,cross_chain_in_K,+0.0143,98,calc_block_opener,6,75,129,1,0,11.6406
+1622,cross_chain_in_K,+0.0143,98,calc_block_opener,7,95,113,1,0,11.5547
+1622,cross_chain_in_K,+0.0143,98,calc_block_opener,8,63,83,1,0,11.4609
+1622,cross_chain_in_K,+0.0143,98,calc_block_opener,9,51,7,1,0,11.3828
+1622,cross_chain_in_K,+0.0143,98,calc_block_opener,10,95,145,1,0,11.3281
+1622,cross_chain_in_K,+0.0143,98,calc_block_opener,11,49,134,1,0,11.2969
+1622,cross_chain_in_K,+0.0143,98,calc_block_opener,12,64,100,1,0,11.2500
+1622,cross_chain_in_K,+0.0143,98,calc_block_opener,13,20,66,1,0,11.2422
+1622,cross_chain_in_K,+0.0143,98,calc_block_opener,14,48,71,1,0,11.1172
+1622,cross_chain_in_K,+0.0143,98,calc_block_opener,15,14,157,1,0,11.0078
+1622,cross_chain_in_K,+0.0143,98,calc_block_opener,16,14,121,1,0,11.0000
+1622,cross_chain_in_K,+0.0143,98,calc_block_opener,17,13,184,1,0,10.9766
+1622,cross_chain_in_K,+0.0143,98,calc_block_opener,18,57,125,1,0,10.9766
+1622,cross_chain_in_K,+0.0143,98,calc_block_opener,19,86,151,1,0,10.9609

@@ -31,7 +31,8 @@ LAYERS=(6 12 18 23)
 # PPO save_freq=10, so steps land on multiples of 10. Spread spans the early
 # learning phase, the climb, and the post-plateau region (val acc plateaued
 # ~step 140 at ~0.58 and stayed flat through step 200).
-DENSE_STEPS=(10 30 60 100 140 180 200)
+# Override via env var: DENSE_STEPS="10 30 50 80 116" bash scripts/run_dense_pipeline.sh
+read -r -a DENSE_STEPS <<< "${DENSE_STEPS:-10 30 60 100 140 180 200}"
 
 echo "============================================================"
 echo " Full pipeline: steps ${DENSE_STEPS[*]}"
@@ -48,7 +49,10 @@ echo "------------------------------------------------------------"
 
 all_acts_exist=true
 for L in "${LAYERS[@]}"; do
-    [ ! -f "$ACT_DIR/${BASELINE_LABEL}_layer${L}.pt" ] && all_acts_exist=false && break
+    if [ ! -f "$ACT_DIR/${BASELINE_LABEL}_layer${L}_train.pt" ] && [ ! -f "$ACT_DIR/${BASELINE_LABEL}_layer${L}.pt" ]; then
+        all_acts_exist=false
+        break
+    fi
 done
 
 if $all_acts_exist; then
@@ -76,8 +80,10 @@ else
     TEMP_ACT_DIR="data/activations_tmp_step0"
     mkdir -p "$TEMP_ACT_DIR"
     for L in "${LAYERS[@]}"; do
-        SRC="$ACT_DIR/${BASELINE_LABEL}_layer${L}.pt"
-        [ -f "$SRC" ] && ln -sf "$(realpath "$SRC")" "$TEMP_ACT_DIR/${BASELINE_LABEL}_layer${L}.pt"
+        for SUFFIX in _train _val ""; do
+            SRC="$ACT_DIR/${BASELINE_LABEL}_layer${L}${SUFFIX}.pt"
+            [ -f "$SRC" ] && ln -sf "$(realpath "$SRC")" "$TEMP_ACT_DIR/${BASELINE_LABEL}_layer${L}${SUFFIX}.pt"
+        done
     done
 
     echo "[train SAEs] $BASELINE_LABEL"
@@ -86,7 +92,7 @@ else
         --save_dir        "$SAE_DIR" \
         --expansion_factor 8 \
         --k               64 \
-        --epochs          40 \
+        --epochs          20 \
         --lr              1e-4 \
         --batch_size      512 \
         --device          cuda \
@@ -130,7 +136,7 @@ for STEP in "${DENSE_STEPS[@]}"; do
     # Check if all 4 layer files already exist
     all_acts_exist=true
     for L in "${LAYERS[@]}"; do
-        if [ ! -f "$ACT_DIR/${STAGE_LABEL}_layer${L}.pt" ]; then
+        if [ ! -f "$ACT_DIR/${STAGE_LABEL}_layer${L}_train.pt" ] && [ ! -f "$ACT_DIR/${STAGE_LABEL}_layer${L}.pt" ]; then
             all_acts_exist=false
             break
         fi
@@ -157,11 +163,13 @@ for STEP in "${DENSE_STEPS[@]}"; do
     mkdir -p "$TEMP_ACT_DIR"
 
     for L in "${LAYERS[@]}"; do
-        SRC="$ACT_DIR/${STAGE_LABEL}_layer${L}.pt"
-        DST="$TEMP_ACT_DIR/${STAGE_LABEL}_layer${L}.pt"
-        if [ ! -f "$DST" ] && [ -f "$SRC" ]; then
-            ln -s "$(realpath "$SRC")" "$DST"
-        fi
+        for SUFFIX in _train _val ""; do
+            SRC="$ACT_DIR/${STAGE_LABEL}_layer${L}${SUFFIX}.pt"
+            DST="$TEMP_ACT_DIR/${STAGE_LABEL}_layer${L}${SUFFIX}.pt"
+            if [ ! -f "$DST" ] && [ -f "$SRC" ]; then
+                ln -s "$(realpath "$SRC")" "$DST"
+            fi
+        done
     done
 
     # Check if SAEs already trained for all layers
@@ -182,7 +190,7 @@ for STEP in "${DENSE_STEPS[@]}"; do
             --save_dir        "$SAE_DIR" \
             --expansion_factor 8 \
             --k               64 \
-            --epochs          40 \
+            --epochs          20 \
             --lr              1e-4 \
             --batch_size      512 \
             --device          cuda \

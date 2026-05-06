@@ -1,0 +1,7 @@
+chain,stage,k,load_quad_stable,load_quad_reweighted,load_quad_redirected,load_quad_rotated,load_density_sum,rw_density_match,rand_density_match,ce_full_recon,ce_ablate_loadbearing,ce_ablate_reweighted_matched,ce_ablate_random_matched,delta_load,delta_rw,delta_rand,specificity_load_minus_rw,specificity_load_minus_rand
+flexible,instruct_base,50,27,10,4,9,0.9373,0.9454,1.0002,2.5124,3.7205,2.6300,2.3657,1.2081,0.1175,-0.1468,1.0905,1.3548
+flexible,ppo_step30,50,27,10,4,9,0.9373,0.9454,1.0002,2.4532,4.1501,2.4354,2.2799,1.6969,-0.0178,-0.1733,1.7147,1.8701
+strict,instruct_base,50,21,8,7,14,1.4307,0.7906,1.0076,2.5124,3.0456,2.5180,2.5162,0.5332,0.0056,0.0038,0.5276,0.5294
+strict,ppo_step30,50,21,8,7,14,1.4307,0.7906,1.0076,2.4329,3.7752,2.4408,2.4593,1.3422,0.0078,0.0264,1.3344,1.3158
+shuffled,instruct_base,50,45,1,1,3,0.9848,0.7905,1.0037,2.5178,4.1625,2.5253,2.4651,1.6447,0.0076,-0.0527,1.6371,1.6974
+shuffled,ppo_step30,50,45,1,1,3,0.9848,0.7905,1.0037,2.4016,4.2104,2.4146,2.2808,1.8088,0.0130,-0.1208,1.7958,1.9296

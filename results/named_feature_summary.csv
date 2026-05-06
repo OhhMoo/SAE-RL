@@ -1,0 +1,13 @@
+feature_idx,feature_name,role,predicate,n_contexts,n_pass,pass_rate,threshold,verdict
+1622,leading_digit,loadbearing,leading_digit,20,18,0.9000,0.80,PASS
+6557,calc_block_opener,loadbearing,calc_block_opener,20,3,0.1500,0.80,FAIL
+4460,control_for_1622,control,leading_digit,20,0,0.0000,0.30,SELECTIVE
+3512,control_for_1622,control,leading_digit,20,0,0.0000,0.30,SELECTIVE
+1893,control_for_1622,control,leading_digit,20,0,0.0000,0.30,SELECTIVE
+2073,control_for_1622,control,leading_digit,20,1,0.0500,0.30,SELECTIVE
+5402,control_for_1622,control,leading_digit,20,3,0.1500,0.30,SELECTIVE
+5747,control_for_6557,control,calc_block_opener,20,1,0.0500,0.30,SELECTIVE
+3565,control_for_6557,control,calc_block_opener,20,2,0.1000,0.30,SELECTIVE
+4560,control_for_6557,control,calc_block_opener,20,2,0.1000,0.30,SELECTIVE
+6442,control_for_6557,control,calc_block_opener,20,0,0.0000,0.30,SELECTIVE
+4304,control_for_6557,control,calc_block_opener,20,0,0.0000,0.30,SELECTIVE
