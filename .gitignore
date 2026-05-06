@@ -35,9 +35,6 @@ logs/
 output.txt
 *.log
 
-# Regeneratable analysis caches (density tensors, etc.)
-results/cache/
-
 # Paper drafting workspace (separate repo)
 writing/
 
