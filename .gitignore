@@ -6,6 +6,10 @@ data/gsm8k_sft/
 # Model checkpoints (large binaries)
 checkpoints/
 
+# Safety net: never commit stray tensor/model binaries
+*.pt
+*.safetensors
+
 # Python
 __pycache__/
 *.pyc
