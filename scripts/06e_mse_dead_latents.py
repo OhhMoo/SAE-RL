@@ -88,13 +88,20 @@ def eval_one(sae, acts: torch.Tensor, device: str, batch_size: int = 4096):
                 n_tokens=len(acts))
 
 
-# (chain label, sae checkpoint dir, val activations dir)
+# (chain label, SAE checkpoint dir, primary val-activation dir,
+#  optional fallback val-activation dir)
+#
+# SFT checkpoints use ``data/activations_sft`` for their fine-tuned stages,
+# while the shared instruct-base SAE retains the original activation cache.
+# Keeping the fallback explicit lets the output contain a true step-0 baseline
+# for the SFT trajectory instead of silently dropping it.
 CHAINS = [
-    ("flexible",         "checkpoints/saes",                "data/activations"),
-    ("strict",           "checkpoints/saes_strict",         "data/activations_strict"),
-    ("strict_l23_k256",  "checkpoints/saes_strict_l23_k256", "data/activations_strict"),
-    ("kl0p025",          "checkpoints/saes_kl0p025",        "data/activations_kl0p025"),
-    ("shuffled",         "checkpoints/saes_shuffled",       "data/activations_shuffled"),
+    ("flexible",         "checkpoints/saes",                "data/activations",          None),
+    ("strict",           "checkpoints/saes_strict",         "data/activations_strict",   None),
+    ("strict_l23_k256",  "checkpoints/saes_strict_l23_k256", "data/activations_strict",   None),
+    ("kl0p025",          "checkpoints/saes_kl0p025",        "data/activations_kl0p025",  None),
+    ("shuffled",         "checkpoints/saes_shuffled",       "data/activations_shuffled", None),
+    ("sft",              "checkpoints/saes_sft",            "data/activations_sft",      "data/activations"),
 ]
 
 STAGE_ORDER = ["instruct_base", "ppo_step10", "ppo_step30", "ppo_step50",
@@ -105,7 +112,7 @@ STAGE_ORDER = ["instruct_base", "ppo_step10", "ppo_step30", "ppo_step50",
 def stage_key(stage):
     if stage == "instruct_base":
         return -1
-    m = re.match(r"ppo_step(\d+)$", stage)
+    m = re.match(r"(?:ppo|sft)_step(\d+)$", stage)
     return int(m.group(1)) if m else 9999
 
 
@@ -113,14 +120,23 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--output_csv", default="results/sae_mse_dead.csv")
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
+    ap.add_argument(
+        "--chains", nargs="+", choices=[chain[0] for chain in CHAINS],
+        help="Evaluate only the named chains. Use this in a sparse checkout, "
+             "for example: --chains sft --output_csv results/sae_mse_dead_sft.csv",
+    )
     args = ap.parse_args()
 
     out = Path(args.output_csv)
     out.parent.mkdir(parents=True, exist_ok=True)
     rows = []
 
-    for chain, sae_dir, act_dir in CHAINS:
+    selected_chains = set(args.chains) if args.chains else None
+    for chain, sae_dir, act_dir, fallback_act_dir in CHAINS:
+        if selected_chains is not None and chain not in selected_chains:
+            continue
         sae_dir, act_dir = Path(sae_dir), Path(act_dir)
+        fallback_act_dir = Path(fallback_act_dir) if fallback_act_dir else None
         if not sae_dir.exists():
             print(f"[skip] {chain}: no {sae_dir}")
             continue
@@ -132,6 +148,10 @@ def main():
                 continue
             stage, layer = parts[0], int(parts[1])
             val_path = act_dir / f"{stage}_layer{layer}_val.pt"
+            if not val_path.exists() and fallback_act_dir:
+                fallback = fallback_act_dir / f"{stage}_layer{layer}_val.pt"
+                if fallback.exists():
+                    val_path = fallback
             if not val_path.exists():
                 print(f"[warn] {chain} {stage} L{layer}: missing {val_path}")
                 continue
