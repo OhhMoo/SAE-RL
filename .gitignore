@@ -1,3 +1,7 @@
+# Superseded and bulky material, kept on disk but off the published repo.
+# _archive/README.md says what is in there and why each item left.
+_archive/
+
 # Large data (regeneratable)
 data/activations*/
 data/gsm8k/
@@ -9,6 +13,12 @@ checkpoints/
 # Safety net: never commit stray tensor/model binaries
 *.pt
 *.safetensors
+
+# Regenerated analysis outputs. The scripts recreate both directories on demand
+# (every writer calls mkdir(parents=True, exist_ok=True)); they are outputs, not
+# sources, and the published figure set now lives in the paper instead.
+figures/
+results/cache/
 
 # Python
 __pycache__/
@@ -36,11 +46,9 @@ wandb/
 
 # Run logs / terminal captures
 logs/
+outputs/
 output.txt
 *.log
-
-# Paper drafting workspace (separate repo)
-writing/
 
 # macOS / editor cruft
 .DS_Store

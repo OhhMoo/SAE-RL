@@ -184,10 +184,16 @@ def resolve_model_path(stage: str, merged_root: Path):
     if stage == "instruct_base":
         return "Qwen/Qwen2.5-0.5B-Instruct"
     m = re.match(r"ppo_step(\d+)$", stage)
-    if not m:
-        return None
-    p = merged_root / f"step_{m.group(1)}"
-    return str(p) if p.exists() else None
+    if m:
+        p = merged_root / f"step_{m.group(1)}"
+        return str(p) if p.exists() else None
+    # SFT checkpoints are already HF-format (no merge stage); point --merged_dir
+    # at checkpoints/gsm8k-sft/qwen05b-gsm8k-sft-instruct-ckpts for these.
+    m = re.match(r"sft_step(\d+)$", stage)
+    if m:
+        p = merged_root / f"global_step_{m.group(1)}" / "huggingface"
+        return str(p) if p.exists() else None
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -197,7 +203,10 @@ def resolve_model_path(stage: str, merged_root: Path):
 STAGE_ORDER = ["instruct_base",
                "ppo_step10", "ppo_step30", "ppo_step50", "ppo_step60",
                "ppo_step80", "ppo_step100", "ppo_step116",
-               "ppo_step140", "ppo_step180", "ppo_step200"]
+               "ppo_step140", "ppo_step180", "ppo_step200",
+               "sft_step29", "sft_step58", "sft_step87", "sft_step116",
+               "sft_step145", "sft_step174", "sft_step203", "sft_step232",
+               "sft_step261", "sft_step290", "sft_step319", "sft_step348"]
 
 
 def main():
