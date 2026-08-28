@@ -1,5 +1,5 @@
 # Core RL training (verl)
-# Install verl from local repo: pip install -e ../verl
+# verl is installed separately from source: https://github.com/volcengine/verl
 torch>=2.4.0
 transformers>=4.45.0
 datasets
@@ -9,9 +9,8 @@ ray>=2.10
 omegaconf
 hydra-core
 
-anthropic
-
 # Experiment tracking & utilities
+openpyxl
 wandb
 numpy
 pandas

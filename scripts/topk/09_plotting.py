@@ -31,7 +31,7 @@ import numpy as np
 import pandas as pd
 
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 RESULTS = REPO_ROOT / "results"
 FIGURES = REPO_ROOT / "figures"
 FIGURES.mkdir(exist_ok=True)

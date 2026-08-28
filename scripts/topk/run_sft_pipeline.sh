@@ -8,14 +8,14 @@
 #   2. Train a TopK SAE (k=64, 8x expansion, 20 epochs) per (step, layer),
 #      warm-started from the previous stage so feature indices stay aligned.
 # Warm-start chain: instruct_base -> sft_step29 -> sft_step58 -> ... -> sft_step348.
-# Baseline instruct_base SAEs must already be in $SAE_DIR (pulled from
-# OhhMoo/sae-rl-qwen05b-layers sae_flexible/, identical to the strict-chain
-# baselines at L6/12/18); baseline activations are reused from data/activations.
+# Baseline instruct_base SAEs must already be in $SAE_DIR (identical to the
+# strict-chain baselines at L6/12/18); baseline activations are reused from
+# data/activations.
 #
-# Run from sae_rl/ root: bash scripts/run_sft_pipeline.sh
+# Run from anywhere: bash scripts/topk/run_sft_pipeline.sh
 
 set -euo pipefail
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/../.."
 
 SFT_CKPT_ROOT="${SFT_CKPT_ROOT:-checkpoints/gsm8k-sft/qwen05b-gsm8k-sft-instruct-ckpts}"
 ACT_DIR="${ACT_DIR:-data/activations_sft}"
@@ -69,7 +69,7 @@ for STEP in "${SFT_STEPS[@]}"; do
         echo "[skip] Activations already collected for $STAGE_LABEL"
     else
         echo "[activations] Collecting from $MODEL_DIR"
-        python scripts/04_collect_activations.py \
+        python scripts/topk/04_collect_activations.py \
             --model_path      "$MODEL_DIR" \
             --checkpoint_name "$STAGE_LABEL" \
             --layers          "${LAYERS[@]}" \
@@ -104,7 +104,7 @@ for STEP in "${SFT_STEPS[@]}"; do
         echo "[skip] SAEs already trained for $STAGE_LABEL"
     else
         echo "[train SAEs] $STAGE_LABEL (warm-start from $PREV_STAGE)"
-        python scripts/05_train_sae.py \
+        python scripts/topk/05_train_sae.py \
             --activations_dir "$TEMP_ACT_DIR" \
             --save_dir        "$SAE_DIR" \
             --expansion_factor 8 \

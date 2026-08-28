@@ -1,10 +1,12 @@
 # JumpReLU SAE arm (scripts/jumprelu/)
 
-Companion arm to the TopK pipeline (`05_train_sae.py` etc.), evaluating the
-same layers with a JumpReLU parameterization instead of hard top-k selection.
-Built to answer Section 5.3's question: does the layer-depth-dependent
-fidelity degradation seen in the TopK arm reproduce under a learned
-threshold, or is it a property of the TopK parameterization specifically?
+Companion arm to the TopK pipeline (`scripts/topk/05_train_sae.py` etc.),
+evaluating the same layers with a JumpReLU parameterization instead of hard
+top-k selection. In the paper this arm supports Section 3.5 and Appendix J:
+the null-step comparison is repeated under a learned-threshold architecture to
+check that the retraining-drift effect is not specific to a hard TopK budget.
+The arm also produced the layer-depth fidelity measurements behind the paper's
+decision to exclude layer 23 from the main comparison (Limitations).
 
 ## Files
 
@@ -21,7 +23,8 @@ threshold, or is it a property of the TopK parameterization specifically?
 - `05_train_sae_jumprelu.py` -- train one SAE at one (layer, l0, seed).
 - `05b_sweep_jumprelu.py` -- two sweep modes:
   - `--mode l0-sweep`: find the best l0 at a layer under a hard_l0 sparsity
-    cutoff (mirrors `05b_sweep_hyperparams.sh`'s standardisation goal).
+    cutoff (mirrors `scripts/topk/05b_sweep_hyperparams.sh`'s standardisation
+    goal).
   - `--mode seed-check`: repeat the same config across multiple seeds to
     check whether an observed cross-layer quality difference is reproducible.
 
@@ -51,13 +54,12 @@ runs are not yet included -- see Limitations)
 
 ## Limitations
 
-- All results are `instruct_base` only. No JumpReLU SFT/PPO checkpoint
-  trajectories have been run yet -- this is the main gap versus the TopK
-  arm's Table 1, which reports per-checkpoint fidelity.
-- No `frac_rec` (loss-recovery) metric is computed for this arm yet. The
-  TopK arm's Table 1 reports this alongside MSE/NMSE; adding it here would
-  require patching SAE reconstructions into the live model's forward pass
-  and comparing against mean-ablation, which this arm's scripts don't yet do.
+- All fidelity results above are `instruct_base` only; the null-step
+  comparison itself uses checkpoint chains as described in the main README.
+- No `frac_rec` (loss-recovery) metric is computed for this arm yet. The TopK
+  arm reports this alongside MSE/NMSE; adding it here would require patching
+  SAE reconstructions into the live model's forward pass and comparing
+  against mean-ablation, which this arm's scripts don't yet do.
 - The GSM8K train/val split in `jumprelu_extract.py::load_gsm8k_split`
   reproduces the ~80/20 *ratio* described in the cached-activation dataset's
   README but is not confirmed to reproduce the same underlying rows -- see

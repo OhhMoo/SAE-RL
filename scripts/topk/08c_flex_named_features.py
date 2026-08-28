@@ -37,7 +37,7 @@ from datasets import load_dataset
 from transformers import AutoTokenizer
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 INSTRUCT_MODEL = "Qwen/Qwen2.5-0.5B-Instruct"
 DEAD_THRESHOLD = 1e-4
 CHAIN = "flexible"

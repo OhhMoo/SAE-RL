@@ -35,7 +35,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 LAYER = 18
 DEAD_THRESHOLD = 1e-4
 

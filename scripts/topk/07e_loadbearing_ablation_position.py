@@ -40,7 +40,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from tqdm import tqdm
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 LAYER = 18
 STAGE_TARGET = "ppo_step30"
 DEAD_THRESHOLD = 1e-4

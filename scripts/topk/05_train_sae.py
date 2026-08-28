@@ -5,7 +5,7 @@ Trains a TopK SAE on the residual stream activations collected in step 4.
 Trains one SAE per (checkpoint, layer) pair for comparison.
 
 Usage:
-    python scripts/05_train_sae.py \
+    python scripts/topk/05_train_sae.py \
         --activations_dir data/activations \
         --save_dir checkpoints/saes \
         --expansion_factor 8 \

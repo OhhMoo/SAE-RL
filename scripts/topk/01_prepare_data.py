@@ -2,7 +2,7 @@
 Step 1: Prepare GSM8k for PPO/RL (``prompt`` + reward_model).
 
 Usage:
-    python scripts/01_prepare_data.py --save_dir data/gsm8k
+    python scripts/topk/01_prepare_data.py --save_dir data/gsm8k
 """
 
 import argparse

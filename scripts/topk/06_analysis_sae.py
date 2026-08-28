@@ -88,7 +88,7 @@ COLOR_STRICT = PALETTE["twilight"]
 # Project layout
 # ---------------------------------------------------------------------------
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 RESULTS_DIR = ROOT / "results"
 FIGURES_DIR = ROOT / "figures"
 CACHE_DIR = RESULTS_DIR / "cache"

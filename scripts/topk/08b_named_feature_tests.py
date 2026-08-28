@@ -39,7 +39,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from tqdm import tqdm
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 LAYER = 18
 INSTRUCT_MODEL = "Qwen/Qwen2.5-0.5B-Instruct"
 DEAD_THRESHOLD = 1e-4

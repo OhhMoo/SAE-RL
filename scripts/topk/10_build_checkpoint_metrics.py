@@ -3,12 +3,12 @@
 This script joins the reconstruction/dead-latent evaluation with the existing
 loss-recovery evaluation for every available SFT and PPO SAE checkpoint.  It
 creates a machine-readable CSV, two checkpoint-trajectory figures, and refreshes
-the ``sae_michael`` tab in the shared collation workbook without modifying the
-other collaborators' tabs.
+the ``sae_topk`` tab in the shared collation workbook without modifying the
+other tabs.
 
 Run from the repository root after ``06e_mse_dead_latents.py``:
 
-    python scripts/10_build_checkpoint_metrics.py
+    python scripts/topk/10_build_checkpoint_metrics.py
 """
 
 from __future__ import annotations
@@ -24,7 +24,7 @@ import pandas as pd
 from openpyxl.styles import Font, PatternFill
 
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent
 RESULTS = ROOT / "results"
 FIGURES = ROOT / "figures"
 WORKBOOK = ROOT.parent / "collation" / "SAE_Collation.xlsx"
@@ -150,11 +150,11 @@ def refresh_workbook(metrics: pd.DataFrame) -> None:
     if not WORKBOOK.exists():
         raise FileNotFoundError(f"Missing collation workbook: {WORKBOOK}")
     workbook = openpyxl.load_workbook(WORKBOOK)
-    if "sae_michael" in workbook.sheetnames:
-        sheet = workbook["sae_michael"]
+    if "sae_topk" in workbook.sheetnames:
+        sheet = workbook["sae_topk"]
         sheet.delete_rows(1, sheet.max_row)
     else:
-        sheet = workbook.create_sheet("sae_michael", 0)
+        sheet = workbook.create_sheet("sae_topk", 0)
 
     headers = [
         "Architecture", "Expansion", "K", "Optimizer", "LR", "Checkpoint",

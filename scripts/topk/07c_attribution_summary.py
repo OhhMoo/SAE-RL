@@ -31,7 +31,7 @@ from pathlib import Path
 import numpy as np
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 QUADRANTS = ["stable", "reweighted", "redirected", "rotated"]
 DEAD_THRESHOLD = 1e-4
 

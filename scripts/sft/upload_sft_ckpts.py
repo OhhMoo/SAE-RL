@@ -1,16 +1,16 @@
 """Upload the intermediate GSM8k-SFT checkpoints to the Hugging Face Hub.
 
-Pushes each local checkpoint's huggingface/ dir to
-OhhMoo/qwen05b-gsm8k-sft-instruct under checkpoints/global_step_<N>/,
-skipping steps whose model.safetensors is already complete on the Hub.
-Safe to re-run after an interruption.
+Pushes each local checkpoint's huggingface/ dir to the target model repository
+under checkpoints/global_step_<N>/, skipping steps whose model.safetensors is
+already complete on the Hub. Safe to re-run after an interruption.
+Set HF_REPO_ID to the target repo (e.g. "<namespace>/qwen05b-gsm8k-sft-instruct").
 """
 
 import os
 
 from huggingface_hub import HfApi
 
-REPO = "OhhMoo/qwen05b-gsm8k-sft-instruct"
+REPO = os.environ.get("HF_REPO_ID", "<namespace>/qwen05b-gsm8k-sft-instruct")
 CKPT_ROOT = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
     "..",

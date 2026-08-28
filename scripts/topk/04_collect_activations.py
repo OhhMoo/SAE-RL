@@ -5,7 +5,7 @@ Runs the model on GSM8k prompts and caches activations from specified layers.
 These cached activations are used to train SAEs in the next step.
 
 Usage:
-    python scripts/04_collect_activations.py \
+    python scripts/topk/04_collect_activations.py \
         --model_path Qwen/Qwen2.5-0.5B-Instruct \
         --checkpoint_name pretrained \
         --layers 6 12 18 23 \

@@ -6,9 +6,11 @@
 # Produces an HF-format model at checkpoints/gsm8k-sft/qwen05b-gsm8k-sft-instruct/.
 set -euo pipefail
 
-REPO_DIR="/home/water/michael/sae_rl/sae_rl"
-VERL_DIR="/home/water/michael/sae_rl/tools/SAE_Tools/verl"
-ENV_BIN="/home/water/.conda/envs/sae_rl/bin"
+# Paths are environment-configurable: REPO_DIR is this repository's root,
+# VERL_DIR a local checkout of verl, ENV_BIN the python env's bin directory.
+REPO_DIR="${REPO_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
+VERL_DIR="${VERL_DIR:?Set VERL_DIR to a local verl checkout}"
+ENV_BIN="${ENV_BIN:-$(dirname "$(which python)")}"
 cd "$REPO_DIR"
 
 export PYTHONPATH="$VERL_DIR:${PYTHONPATH:-}"

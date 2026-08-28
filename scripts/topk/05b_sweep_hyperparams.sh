@@ -15,14 +15,14 @@
 # Eval (run separately after the sweep):
 #   for D in checkpoints/saes_sweep/exp*_lr*; do
 #     CELL=$(basename "$D")
-#     python scripts/eval_sae.py --sae_dir "$D" --activations_dir data/activations_strict \
+#     python scripts/topk/06b_eval_sae.py --sae_dir "$D" --activations_dir data/activations_strict \
 #       --merged_dir checkpoints/ppo_merged_strict --output_csv "results/sae_eval_sweep_${CELL}.csv"
 #   done
 #
 # Run from sae_rl/ root.
 
 set -euo pipefail
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/../.."
 
 ACT_DIR="${ACT_DIR:-data/activations_strict}"
 SWEEP_ROOT="${SWEEP_ROOT:-checkpoints/saes_sweep}"
@@ -82,7 +82,7 @@ for EXP in "${EXPANSIONS[@]}"; do
             fi
 
             echo "[train] $CELL/$STAGE"
-            python scripts/05_train_sae.py \
+            python scripts/topk/05_train_sae.py \
                 --activations_dir "$TMP" \
                 --save_dir        "$SAE_DIR" \
                 --expansion_factor "$EXP" \

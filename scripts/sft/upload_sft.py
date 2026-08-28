@@ -1,14 +1,16 @@
 """Publish the GSM8k-SFT model to the Hugging Face Hub (fp32, as saved).
 
-Creates OhhMoo/qwen05b-gsm8k-sft-instruct (public), writes a model card into the
-HF model dir, and uploads the folder. Uses the cached HF token (logged in as OhhMoo).
+Creates the target model repository (public), writes a model card into the
+HF model dir, and uploads the folder. Set HF_REPO_ID to the target repo
+(e.g. "<namespace>/qwen05b-gsm8k-sft-instruct") and authenticate with a
+write-enabled HF token beforehand.
 """
 
 import os
 
 from huggingface_hub import HfApi
 
-REPO = "OhhMoo/qwen05b-gsm8k-sft-instruct"
+REPO = os.environ.get("HF_REPO_ID", "<namespace>/qwen05b-gsm8k-sft-instruct")
 MODEL_DIR = "checkpoints/gsm8k-sft/qwen05b-gsm8k-sft-instruct/global_step_348/huggingface"
 
 SYSTEM_PROMPT = (

@@ -15,13 +15,13 @@
 #       ../ppo_run/checkpoints/flexible/global_step_N/
 #
 # Overrides:
-#   PPO_CKPT_ROOT=../ppo_run/checkpoints/strict bash scripts/run_dense_pipeline.sh
-#   SAE_DIR=checkpoints/saes_custom bash scripts/run_dense_pipeline.sh
+#   PPO_CKPT_ROOT=../ppo_run/checkpoints/strict bash scripts/topk/run_dense_pipeline.sh
+#   SAE_DIR=checkpoints/saes_custom bash scripts/topk/run_dense_pipeline.sh
 #
-# Run from sae_rl/ root: bash scripts/run_dense_pipeline.sh
+# Run from sae_rl/ root: bash scripts/topk/run_dense_pipeline.sh
 
 set -euo pipefail
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/../.."
 
 PPO_CKPT_ROOT="${PPO_CKPT_ROOT:-../ppo_run/checkpoints/flexible}"
 MERGE_ROOT="${MERGE_ROOT:-checkpoints/ppo_merged}"
@@ -31,7 +31,7 @@ LAYERS=(6 12 18 23)
 # PPO save_freq=10, so steps land on multiples of 10. Spread spans the early
 # learning phase, the climb, and the post-plateau region (val acc plateaued
 # ~step 140 at ~0.58 and stayed flat through step 200).
-# Override via env var: DENSE_STEPS="10 30 50 80 116" bash scripts/run_dense_pipeline.sh
+# Override via env var: DENSE_STEPS="10 30 50 80 116" bash scripts/topk/run_dense_pipeline.sh
 read -r -a DENSE_STEPS <<< "${DENSE_STEPS:-10 30 60 100 140 180 200}"
 
 echo "============================================================"
@@ -59,7 +59,7 @@ if $all_acts_exist; then
     echo "[skip] Baseline activations already collected"
 else
     echo "[activations] Collecting from $BASELINE_MODEL"
-    python scripts/04_collect_activations.py \
+    python scripts/topk/04_collect_activations.py \
         --model_path      "$BASELINE_MODEL" \
         --checkpoint_name "$BASELINE_LABEL" \
         --layers          "${LAYERS[@]}" \
@@ -87,7 +87,7 @@ else
     done
 
     echo "[train SAEs] $BASELINE_LABEL"
-    python scripts/05_train_sae.py \
+    python scripts/topk/05_train_sae.py \
         --activations_dir "$TEMP_ACT_DIR" \
         --save_dir        "$SAE_DIR" \
         --expansion_factor 8 \
@@ -146,7 +146,7 @@ for STEP in "${DENSE_STEPS[@]}"; do
         echo "[skip] Activations already collected for $STAGE_LABEL"
     else
         echo "[activations] Collecting from $MERGED_DIR"
-        python scripts/04_collect_activations.py \
+        python scripts/topk/04_collect_activations.py \
             --model_path      "$MERGED_DIR" \
             --checkpoint_name "$STAGE_LABEL" \
             --layers          "${LAYERS[@]}" \
@@ -185,7 +185,7 @@ for STEP in "${DENSE_STEPS[@]}"; do
         echo "[skip] SAEs already trained for $STAGE_LABEL"
     else
         echo "[train SAEs] $STAGE_LABEL (warm-start from $PREV_STAGE)"
-        python scripts/05_train_sae.py \
+        python scripts/topk/05_train_sae.py \
             --activations_dir "$TEMP_ACT_DIR" \
             --save_dir        "$SAE_DIR" \
             --expansion_factor 8 \
@@ -210,5 +210,5 @@ echo "============================================================"
 echo " Dense pipeline complete."
 echo " Activations: $ACT_DIR"
 echo " SAEs:        $SAE_DIR"
-echo " Next: bash scripts/run_analysis.sh"
+echo " Next: python scripts/topk/06_analysis_sae.py ..."
 echo "============================================================"

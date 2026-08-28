@@ -1,7 +1,7 @@
 """GSM8K loading and residual-stream activation extraction via forward hooks.
 
-Used to pull activations at layers not covered by the team's cached activation
-dataset (OhhMoo/sae-rl-qwen05b-strict-activations only has layers 6, 12, 18, 23).
+Used to pull activations at layers not covered by the cached activation
+dataset (which only has layers 6, 12, 18, 23).
 Reproduces the train/val split ratio described in that dataset's README
 (356,596 / 89,148, seed=0) as closely as possible -- see the NOTE below, this
 is a best-effort match, not a confirmed-identical split.

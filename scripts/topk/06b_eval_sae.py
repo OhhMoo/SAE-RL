@@ -17,9 +17,9 @@ and the HF id Qwen/Qwen2.5-0.5B-Instruct for the instruct baseline.
 Output: results/sae_eval.csv (default) — one row per SAE.
 
 Run from sae_rl/:
-    python scripts/eval_sae.py
-    python scripts/eval_sae.py --skip_delta            # NMSE/L0 only, fast
-    python scripts/eval_sae.py --n_delta_prompts 50    # quicker delta loss
+    python scripts/topk/06b_eval_sae.py
+    python scripts/topk/06b_eval_sae.py --skip_delta            # NMSE/L0 only, fast
+    python scripts/topk/06b_eval_sae.py --n_delta_prompts 50    # quicker delta loss
 """
 
 import argparse

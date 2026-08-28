@@ -25,7 +25,7 @@ from pathlib import Path
 import torch
 import torch.nn as nn
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 
 CHAINS = {
     "flexible": ROOT / "checkpoints" / "saes",
