@@ -103,6 +103,40 @@ checkout (see `scripts/sft/train_sft.sh`). Large artifacts — activation
 tensors, model checkpoints, SAE weights — are not in this repository; they are
 regenerable from the pipeline above.
 
+## Running the pipeline
+
+All commands run from the repository root. The minimal chain for one
+checkpoint at one layer:
+
+```bash
+# 1. Prepare GSM8K prompts (once)
+python scripts/topk/01_prepare_data.py --save_dir data/gsm8k
+
+# 2. Cache residual-stream activations for a checkpoint
+python scripts/topk/04_collect_activations.py \
+    --model_path Qwen/Qwen2.5-0.5B-Instruct --checkpoint_name instruct_base \
+    --layers 6 12 18 23
+
+# 3. Train a TopK SAE (paper recipe: k=64, lr 1e-4, batch 512, 20 epochs)
+python scripts/topk/05_train_sae.py \
+    --k 64 --lr 1e-4 --batch_size 512 --epochs 20
+
+# 4. Warm-start the next checkpoint's SAE from the previous one
+python scripts/topk/05_train_sae.py \
+    --k 64 --lr 1e-4 --batch_size 512 --epochs 20 \
+    --source sft_step29_layer18 --init_from_stage instruct_base
+
+# 5. Evaluate and analyze
+python scripts/topk/06b_eval_sae.py            # NMSE, loss recovery -> results/
+python scripts/topk/06_analysis_sae.py drift   # decoder drift -> results/
+```
+
+A **null step** is step 3–4 run unchanged on the frozen-base activations from
+step 2 — same recipe, same checkpoint-selection rule — with `--seed` varied
+across replications. End-to-end drivers (`run_sft_pipeline.sh`,
+`run_dense_pipeline.sh`) automate the per-checkpoint loop for the SFT and PPO
+chains; both honor env-var overrides for checkpoint and output directories.
+
 ## License
 
 Code: Apache-2.0, matching the `Qwen2.5-0.5B-Instruct` base model. GSM8K is
